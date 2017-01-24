@@ -1,5 +1,6 @@
 module Tests exposing (..)
 
+import Dict
 import Test exposing (..)
 import Expect
 import String
@@ -10,8 +11,8 @@ import Xml.Decode exposing (..)
 example : Value
 example =
     object
-        [ ( "name", string "noah" )
-        , ( "age", int 5 )
+        [ ( "name", Dict.empty, string "noah" )
+        , ( "age", Dict.empty, int 5 )
         ]
 
 
@@ -19,6 +20,23 @@ exampleAsString : String
 exampleAsString =
     """
 <name>noah</name>
+<age>5</age>
+"""
+        |> String.trim
+
+
+exampleWithProps : Value
+exampleWithProps =
+    object
+        [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "noah" )
+        , ( "age", Dict.empty, int 5 )
+        ]
+
+
+exampleWithPropsAsString : String
+exampleWithPropsAsString =
+    """
+<name is="me">noah</name>
 <age>5</age>
 """
         |> String.trim
@@ -38,9 +56,10 @@ nestedExample : Value
 nestedExample =
     object
         [ ( "person"
+          , Dict.empty
           , object
-                [ ( "name", string "noah" )
-                , ( "age", int 5 )
+                [ ( "name", Dict.empty, string "noah" )
+                , ( "age", Dict.empty, int 5 )
                 ]
           )
         ]
@@ -66,6 +85,9 @@ all =
         , test "a basic tag is decoded properly" <|
             \_ ->
                 Expect.equal (decode exampleAsString) (Ok example)
+        , test "a tag with props is encoded properly" <|
+            \_ ->
+                Expect.equal exampleWithPropsAsString (encode 0 exampleWithProps)
         , test "a nested tag is encoded properly" <|
             \_ ->
                 Expect.equal nestedExampleAsString (encode 4 nestedExample)

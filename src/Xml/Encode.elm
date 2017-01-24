@@ -1,10 +1,11 @@
 module Xml.Encode exposing (..)
 
 import String
+import Dict exposing (Dict)
 
 
 type Value
-    = Tag String Value
+    = Tag String (Dict String Value) Value
     | StrNode String
     | IntNode Int
     | FloatNode Float
@@ -15,14 +16,14 @@ type Value
 valueToString : Int -> Int -> Value -> String
 valueToString level indent value =
     case value of
-        Tag name nextValue ->
+        Tag name props nextValue ->
             let
                 needsIndent =
                     case nextValue of
                         Object _ ->
                             True
 
-                        Tag _ _ ->
+                        Tag _ _ _ ->
                             True
 
                         _ ->
@@ -33,9 +34,21 @@ valueToString level indent value =
                         "\n"
                     else
                         ""
+
+                propsToString =
+                    Dict.toList props
+                        |> List.map (\( key, value ) -> key ++ "=\"" ++ (valueToString -1 0 value) ++ "\"")
+                        |> String.join " "
+                        |> (\x ->
+                                if String.length x > 0 then
+                                    " " ++ x
+                                else
+                                    ""
+                           )
             in
                 "<"
                     ++ name
+                    ++ propsToString
                     ++ ">"
                     ++ indentString
                     ++ (valueToString (level + 1) indent nextValue)
@@ -87,7 +100,7 @@ bool b =
     BoolNode b
 
 
-object : List ( String, Value ) -> Value
+object : List ( String, Dict String Value, Value ) -> Value
 object values =
-    List.map (\( name, value ) -> Tag name value) values
+    List.map (\( name, props, value ) -> Tag name props value) values
         |> Object

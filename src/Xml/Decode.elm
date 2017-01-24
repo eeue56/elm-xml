@@ -1,5 +1,6 @@
 module Xml.Decode exposing (..)
 
+import Dict
 import Xml.Encode exposing (Value(..))
 
 
@@ -28,7 +29,7 @@ parseSlice first firstClose trimmed =
                             Err s
 
                         Ok v ->
-                            Ok ( Tag tagName v, firstCloseTag + (String.length closeTag) )
+                            Ok ( Tag tagName Dict.empty v, firstCloseTag + (String.length closeTag) )
 
 
 actualDecode : String -> Result String (List Value)
