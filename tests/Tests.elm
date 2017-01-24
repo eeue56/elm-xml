@@ -4,6 +4,7 @@ import Test exposing (..)
 import Expect
 import String
 import Xml.Encode exposing (..)
+import Xml.Decode exposing (..)
 
 
 example : Value
@@ -21,6 +22,16 @@ exampleAsString =
 <age>5</age>
 """
         |> String.trim
+
+
+badXml : String
+badXml =
+    """ f<name>noah</name>"""
+
+
+badXmlWithNoClose : String
+badXmlWithNoClose =
+    """ <name>noah</naoh>"""
 
 
 nestedExample : Value
@@ -52,7 +63,23 @@ all =
         [ test "a basic tag is encoded properly" <|
             \_ ->
                 Expect.equal exampleAsString (encode 0 example)
+        , test "a basic tag is decoded properly" <|
+            \_ ->
+                Expect.equal (decode exampleAsString) (Ok example)
         , test "a nested tag is encoded properly" <|
             \_ ->
                 Expect.equal nestedExampleAsString (encode 4 nestedExample)
+        , test "a nested tag is decoded properly" <|
+            \_ ->
+                Expect.equal (decode nestedExampleAsString) (Ok nestedExample)
+        , test "a bad xml is an error" <|
+            \_ ->
+                Expect.false "xml is not parsed without a closing tag"
+                    (case decode badXmlWithNoClose of
+                        Err _ ->
+                            False
+
+                        _ ->
+                            True
+                    )
         ]
