@@ -88,6 +88,9 @@ all =
         , test "a tag with props is encoded properly" <|
             \_ ->
                 Expect.equal exampleWithPropsAsString (encode 0 exampleWithProps)
+        , test "a tag with props is decoded properly" <|
+            \_ ->
+                Expect.equal (decode exampleWithPropsAsString) (Ok exampleWithProps)
         , test "a nested tag is encoded properly" <|
             \_ ->
                 Expect.equal nestedExampleAsString (encode 4 nestedExample)

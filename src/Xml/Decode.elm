@@ -4,11 +4,60 @@ import Dict
 import Xml.Encode exposing (Value(..))
 
 
+decodeProps : String -> Result String Value
+decodeProps str =
+    List.foldl
+        (\decoder val ->
+            case val of
+                Ok _ ->
+                    val
+
+                Err _ ->
+                    decoder str
+        )
+        (Err "")
+        [ decodeInt, decodeFloat, decodeString ]
+
+
+parseProps : List String -> List ( String, Value )
+parseProps =
+    List.filterMap
+        (\n ->
+            case String.split "=" n of
+                [ name, value ] ->
+                    case decodeProps value of
+                        Err _ ->
+                            Nothing
+
+                        Ok v ->
+                            case v of
+                                StrNode str ->
+                                    Just ( name, String.dropLeft 1 str |> String.dropRight 1 |> StrNode )
+
+                                _ ->
+                                    Just ( name, v )
+
+                _ ->
+                    Nothing
+        )
+
+
 parseSlice : Int -> Int -> String -> Result String ( Value, Int )
 parseSlice first firstClose trimmed =
     let
-        tagName =
+        beforeClose =
             String.slice (first + 1) firstClose trimmed
+                |> String.words
+
+        tagName =
+            beforeClose
+                |> List.head
+                |> Maybe.withDefault ""
+
+        props =
+            List.drop 1 beforeClose
+                |> parseProps
+                |> Dict.fromList
 
         closeTag =
             "</" ++ tagName ++ ">"
@@ -29,7 +78,7 @@ parseSlice first firstClose trimmed =
                             Err s
 
                         Ok v ->
-                            Ok ( Tag tagName Dict.empty v, firstCloseTag + (String.length closeTag) )
+                            Ok ( Tag tagName props v, firstCloseTag + (String.length closeTag) )
 
 
 actualDecode : String -> Result String (List Value)
