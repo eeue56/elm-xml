@@ -1,9 +1,11 @@
-module Xml.Decode exposing (..)
+module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decodeBool, decodeChildren)
 
 import Dict
 import Xml.Encode exposing (Value(..))
 
 
+{-| Try and decode the props from a string
+-}
 decodeProps : String -> Result String Value
 decodeProps str =
     List.foldl
@@ -110,6 +112,8 @@ actualDecode text =
                 Err "Nothing left"
 
 
+{-| Try to decode a string and turn it into an XML value
+-}
 decode : String -> Result String Value
 decode text =
     case String.trim text of
@@ -121,12 +125,16 @@ decode text =
                 |> Result.map Object
 
 
+{-| Decode a string
+-}
 decodeString : String -> Result String Value
 decodeString str =
     StrNode str
         |> Ok
 
 
+{-| Decode a int
+-}
 decodeInt : String -> Result String Value
 decodeInt str =
     case String.toInt str of
@@ -138,6 +146,8 @@ decodeInt str =
                 |> Ok
 
 
+{-| Decode a float
+-}
 decodeFloat : String -> Result String Value
 decodeFloat str =
     case String.toFloat str of
@@ -149,6 +159,8 @@ decodeFloat str =
                 |> Ok
 
 
+{-| Decode a bool
+-}
 decodeBool : String -> Result String Value
 decodeBool str =
     if str == "true" then
@@ -161,6 +173,8 @@ decodeBool str =
         Err "Not a bool"
 
 
+{-| Decode children from a string
+-}
 decodeChildren : String -> Result String Value
 decodeChildren str =
     List.foldl
