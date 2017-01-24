@@ -2,6 +2,7 @@ module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decode
 
 import Dict
 import Xml.Encode exposing (Value(..))
+import Regex exposing (Regex)
 
 
 {-| Try and decode the props from a string
@@ -27,16 +28,39 @@ parseProps =
         (\n ->
             case String.split "=" n of
                 [ name, value ] ->
-                    case decodeProps <| String.dropLeft 1 <| String.dropRight 1 <| value of
-                        Err _ ->
-                            Nothing
+                    let
+                        withoutQuotes =
+                            value
+                                |> String.dropLeft 1
+                                |> String.dropRight 1
+                    in
+                        case decodeProps withoutQuotes of
+                            Err _ ->
+                                Nothing
 
-                        Ok v ->
-                            Just ( name, v )
+                            Ok v ->
+                                Just ( name, v )
 
                 _ ->
                     Nothing
         )
+
+
+propRegex : Regex.Regex
+propRegex =
+    Regex.regex " .+?=\".+?\""
+
+
+findProps : List String -> Dict.Dict String Value
+findProps =
+    List.tail
+        >> Maybe.withDefault []
+        >> String.join " "
+        >> (\s -> " " ++ s)
+        >> Regex.find Regex.All propRegex
+        >> List.map (.match >> String.trim)
+        >> parseProps
+        >> Dict.fromList
 
 
 parseSlice : Int -> Int -> String -> Result String ( Value, Int )
@@ -44,17 +68,18 @@ parseSlice first firstClose trimmed =
     let
         beforeClose =
             String.slice (first + 1) firstClose trimmed
+
+        words =
+            beforeClose
                 |> String.words
 
         tagName =
-            beforeClose
+            words
                 |> List.head
                 |> Maybe.withDefault ""
 
         props =
-            List.drop 1 beforeClose
-                |> parseProps
-                |> Dict.fromList
+            findProps words
 
         closeTag =
             "</" ++ tagName ++ ">"
@@ -113,6 +138,10 @@ actualDecode text =
 
 
 {-| Try to decode a string and turn it into an XML value
+    >>> import Xml.Encode exposing (Value(Tag, Object), null)
+    >>> import Dict
+    >>> decode "<name></name>"
+    Ok (Object [Tag "name" Dict.empty null])
 -}
 decode : String -> Result String Value
 decode text =

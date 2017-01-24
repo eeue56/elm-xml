@@ -41,7 +41,7 @@ exampleWithProps =
         , ( "person"
           , Dict.empty
           , object
-                [ ( "name", Dict.fromList [ ( "is", string "you" ) ], string "dave" )
+                [ ( "name", Dict.fromList [ ( "is", string "you i guess" ) ], string "dave" )
                 , ( "age", Dict.fromList [ ( "max", int 100 ), ( "inc", float 1.5 ) ], int 50 )
                 , ( "here", Dict.fromList [ ( "is", bool True ) ], null )
                 ]
@@ -58,7 +58,7 @@ exampleWithPropsAsString =
     <here is="false"></here>
 </person>
 <person>
-    <name is="you">dave</name>
+    <name is="you i guess">dave</name>
     <age inc="1.5" max="100">50</age>
     <here is="true"></here>
 </person>
@@ -100,6 +100,11 @@ nestedExampleAsString =
         |> String.trim
 
 
+decodedExampleStuff : Result String Value
+decodedExampleStuff =
+    decode ExampleStuff.stuff
+
+
 all : Test
 all =
     describe "Encode test"
@@ -134,7 +139,7 @@ all =
         , test "a good xml is parsed correctly" <|
             \_ ->
                 Expect.true "xml is not parsed without a closing tag"
-                    (case decode ExampleStuff.stuff of
+                    (case decodedExampleStuff of
                         Err m ->
                             False
 
@@ -144,7 +149,7 @@ all =
         , test "the XML contains a node we expect" <|
             \_ ->
                 Expect.equal
-                    (decode ExampleStuff.stuff
+                    (decodedExampleStuff
                         |> Result.toMaybe
                         |> Maybe.withDefault null
                         |> tags "ListBucketResult"
@@ -154,7 +159,7 @@ all =
         , test "the XML contains a node we expect" <|
             \_ ->
                 Expect.equal
-                    (decode ExampleStuff.stuff
+                    (decodedExampleStuff
                         |> Result.toMaybe
                         |> Maybe.withDefault null
                         |> tags "Contents"
