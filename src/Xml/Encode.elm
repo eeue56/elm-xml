@@ -40,6 +40,9 @@ valueToString level indent value =
             let
                 needsIndent =
                     case nextValue of
+                        Object [] ->
+                            False
+
                         Object _ ->
                             True
 
@@ -124,3 +127,8 @@ object : List ( String, Dict String Value, Value ) -> Value
 object values =
     List.map (\( name, props, value ) -> Tag name props value) values
         |> Object
+
+
+null : Value
+null =
+    object []

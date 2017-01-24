@@ -33,6 +33,7 @@ exampleWithProps =
           , object
                 [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "noah" )
                 , ( "age", Dict.fromList [ ( "max", int 10 ) ], int 5 )
+                , ( "here", Dict.fromList [ ( "is", bool False ) ], null )
                 ]
           )
         , ( "person"
@@ -40,6 +41,7 @@ exampleWithProps =
           , object
                 [ ( "name", Dict.fromList [ ( "is", string "you" ) ], string "dave" )
                 , ( "age", Dict.fromList [ ( "max", int 100 ), ( "inc", float 1.5 ) ], int 50 )
+                , ( "here", Dict.fromList [ ( "is", bool True ) ], null )
                 ]
           )
         ]
@@ -51,10 +53,12 @@ exampleWithPropsAsString =
 <person>
     <name is="me">noah</name>
     <age max=10>5</age>
+    <here is=false></here>
 </person>
 <person>
     <name is="you">dave</name>
     <age inc=1.5 max=100>50</age>
+    <here is=true></here>
 </person>
 """
         |> String.trim

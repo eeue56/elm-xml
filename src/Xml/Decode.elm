@@ -16,7 +16,7 @@ decodeProps str =
                     decoder str
         )
         (Err "")
-        [ decodeInt, decodeFloat, decodeString ]
+        [ decodeBool, decodeInt, decodeFloat, decodeString ]
 
 
 parseProps : List String -> List ( String, Value )
@@ -149,6 +149,18 @@ decodeFloat str =
         Ok v ->
             FloatNode v
                 |> Ok
+
+
+decodeBool : String -> Result String Value
+decodeBool str =
+    if str == "true" then
+        BoolNode True
+            |> Ok
+    else if str == "false" then
+        BoolNode False
+            |> Ok
+    else
+        Err "Not a bool"
 
 
 decodeChildren : String -> Result String Value
