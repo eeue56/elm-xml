@@ -17,7 +17,7 @@ propToString : Value -> String
 propToString value =
     case value of
         StrNode str ->
-            "\"" ++ str ++ "\""
+            str
 
         IntNode n ->
             toString n
@@ -33,34 +33,36 @@ propToString value =
             ""
 
 
+needsIndent : Value -> Bool
+needsIndent nextValue =
+    case nextValue of
+        Object [] ->
+            False
+
+        Object _ ->
+            True
+
+        Tag _ _ _ ->
+            True
+
+        _ ->
+            False
+
+
 valueToString : Int -> Int -> Value -> String
 valueToString level indent value =
     case value of
         Tag name props nextValue ->
             let
-                needsIndent =
-                    case nextValue of
-                        Object [] ->
-                            False
-
-                        Object _ ->
-                            True
-
-                        Tag _ _ _ ->
-                            True
-
-                        _ ->
-                            False
-
                 indentString =
-                    if needsIndent then
+                    if needsIndent nextValue then
                         "\n"
                     else
                         ""
 
                 propsToString =
                     Dict.toList props
-                        |> List.map (\( key, value ) -> key ++ "=" ++ (propToString value))
+                        |> List.map (\( key, value ) -> key ++ "=\"" ++ (propToString value) ++ "\"")
                         |> String.join " "
                         |> (\x ->
                                 if String.length x > 0 then

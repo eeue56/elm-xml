@@ -52,13 +52,13 @@ exampleWithPropsAsString =
     """
 <person>
     <name is="me">noah</name>
-    <age max=10>5</age>
-    <here is=false></here>
+    <age max="10">5</age>
+    <here is="false"></here>
 </person>
 <person>
     <name is="you">dave</name>
-    <age inc=1.5 max=100>50</age>
-    <here is=true></here>
+    <age inc="1.5" max="100">50</age>
+    <here is="true"></here>
 </person>
 """
         |> String.trim

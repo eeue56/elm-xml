@@ -25,17 +25,12 @@ parseProps =
         (\n ->
             case String.split "=" n of
                 [ name, value ] ->
-                    case decodeProps value of
+                    case decodeProps <| String.dropLeft 1 <| String.dropRight 1 <| value of
                         Err _ ->
                             Nothing
 
                         Ok v ->
-                            case v of
-                                StrNode str ->
-                                    Just ( name, String.dropLeft 1 str |> String.dropRight 1 |> StrNode )
-
-                                _ ->
-                                    Just ( name, v )
+                            Just ( name, v )
 
                 _ ->
                     Nothing
