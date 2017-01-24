@@ -1,10 +1,21 @@
-module Xml.Query exposing (..)
+module Xml.Query exposing (tags, contains)
+
+{-|
+
+# Search the parsed XML
+
+@docs tags, contains
+-}
 
 import Xml.Encode exposing (Value(..))
 
 
 {-| Search an XML value for any tags matching
 
+    >>> import Xml.Encode exposing (object, null, encode, Value(Tag, Object))
+    >>> import Dict
+    >>> object [ ("name", Dict.empty, null)] |> tags "name"
+    [Tag "name" Dict.empty (Object []) ]
 
 -}
 tags : String -> Value -> List Value

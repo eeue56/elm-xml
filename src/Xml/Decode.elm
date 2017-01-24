@@ -1,5 +1,14 @@
 module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decodeBool, decodeChildren)
 
+{-|
+
+@docs decode
+
+@docs decodeInt, decodeFloat, decodeString, decodeString, decodeBool
+
+@docs decodeChildren
+-}
+
 import Dict
 import Xml.Encode exposing (Value(..))
 import Regex exposing (Regex)

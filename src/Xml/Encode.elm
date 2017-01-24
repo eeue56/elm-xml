@@ -1,9 +1,19 @@
 module Xml.Encode exposing (Value(..), encode, string, int, float, bool, object, null)
 
+{-|
+@docs Value
+
+@docs encode
+
+@docs string, int, float, bool, object, null
+-}
+
 import String
 import Dict exposing (Dict)
 
 
+{-| Representation of the XML tree
+-}
 type Value
     = Tag String (Dict String Value) Value
     | StrNode String

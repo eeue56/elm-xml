@@ -1,4 +1,7 @@
 {
   "root": "../src",
-  "tests": ["Xml.Decode"]
+  "tests": [
+	"Xml.Decode", 
+	"Xml.Query"
+  ]
 }
