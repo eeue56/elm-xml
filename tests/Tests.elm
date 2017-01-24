@@ -28,16 +28,34 @@ exampleAsString =
 exampleWithProps : Value
 exampleWithProps =
     object
-        [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "noah" )
-        , ( "age", Dict.empty, int 5 )
+        [ ( "person"
+          , Dict.empty
+          , object
+                [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "noah" )
+                , ( "age", Dict.fromList [ ( "max", int 10 ) ], int 5 )
+                ]
+          )
+        , ( "person"
+          , Dict.empty
+          , object
+                [ ( "name", Dict.fromList [ ( "is", string "you" ) ], string "dave" )
+                , ( "age", Dict.fromList [ ( "max", int 100 ), ( "inc", float 1.5 ) ], int 50 )
+                ]
+          )
         ]
 
 
 exampleWithPropsAsString : String
 exampleWithPropsAsString =
     """
-<name is="me">noah</name>
-<age>5</age>
+<person>
+    <name is="me">noah</name>
+    <age max=10>5</age>
+</person>
+<person>
+    <name is="you">dave</name>
+    <age inc=1.5 max=100>50</age>
+</person>
 """
         |> String.trim
 
@@ -87,7 +105,7 @@ all =
                 Expect.equal (decode exampleAsString) (Ok example)
         , test "a tag with props is encoded properly" <|
             \_ ->
-                Expect.equal exampleWithPropsAsString (encode 0 exampleWithProps)
+                Expect.equal exampleWithPropsAsString (encode 4 exampleWithProps)
         , test "a tag with props is decoded properly" <|
             \_ ->
                 Expect.equal (decode exampleWithPropsAsString) (Ok exampleWithProps)

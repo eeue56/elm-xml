@@ -13,6 +13,26 @@ type Value
     | Object (List Value)
 
 
+propToString : Value -> String
+propToString value =
+    case value of
+        StrNode str ->
+            "\"" ++ str ++ "\""
+
+        IntNode n ->
+            toString n
+
+        BoolNode b ->
+            toString b
+                |> String.toLower
+
+        FloatNode f ->
+            toString f
+
+        _ ->
+            ""
+
+
 valueToString : Int -> Int -> Value -> String
 valueToString level indent value =
     case value of
@@ -37,7 +57,7 @@ valueToString level indent value =
 
                 propsToString =
                     Dict.toList props
-                        |> List.map (\( key, value ) -> key ++ "=\"" ++ (valueToString -1 0 value) ++ "\"")
+                        |> List.map (\( key, value ) -> key ++ "=" ++ (propToString value))
                         |> String.join " "
                         |> (\x ->
                                 if String.length x > 0 then
