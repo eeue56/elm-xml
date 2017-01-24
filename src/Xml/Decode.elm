@@ -59,9 +59,12 @@ parseSlice first firstClose trimmed =
     in
         case String.indexes closeTag trimmed of
             [] ->
-                "Failed to find close tag for "
-                    ++ tagName
-                    |> Err
+                if String.startsWith "?" tagName then
+                    Ok ( DocType tagName props, firstClose + 1 )
+                else
+                    "Failed to find close tag for "
+                        ++ tagName
+                        |> Err
 
             firstCloseTag :: _ ->
                 let

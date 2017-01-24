@@ -6,6 +6,8 @@ import Expect
 import String
 import Xml.Encode exposing (..)
 import Xml.Decode exposing (..)
+import Xml.Query exposing (..)
+import ExampleStuff
 
 
 example : Value
@@ -129,4 +131,34 @@ all =
                         _ ->
                             True
                     )
+        , test "a good xml is parsed correctly" <|
+            \_ ->
+                Expect.true "xml is not parsed without a closing tag"
+                    (case decode ExampleStuff.stuff of
+                        Err m ->
+                            False
+
+                        _ ->
+                            True
+                    )
+        , test "the XML contains a node we expect" <|
+            \_ ->
+                Expect.equal
+                    (decode ExampleStuff.stuff
+                        |> Result.toMaybe
+                        |> Maybe.withDefault null
+                        |> tags "ListBucketResult"
+                        |> List.length
+                    )
+                    1
+        , test "the XML contains a node we expect" <|
+            \_ ->
+                Expect.equal
+                    (decode ExampleStuff.stuff
+                        |> Result.toMaybe
+                        |> Maybe.withDefault null
+                        |> tags "Contents"
+                        |> List.length
+                    )
+                    1000
         ]
