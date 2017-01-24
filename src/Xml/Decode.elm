@@ -155,6 +155,10 @@ decode text =
 
 
 {-| Decode a string
+
+    >>> import Xml.Encode exposing (Value(StrNode))
+    >>> decodeString "hello"
+    Ok (StrNode "hello")
 -}
 decodeString : String -> Result String Value
 decodeString str =
@@ -163,6 +167,12 @@ decodeString str =
 
 
 {-| Decode a int
+    >>> import Xml.Encode exposing (Value(IntNode))
+    >>> decodeInt "hello"
+    Err "could not convert string 'hello' to an Int"
+
+    >>> decodeInt "5"
+    Ok (IntNode 5)
 -}
 decodeInt : String -> Result String Value
 decodeInt str =
@@ -176,6 +186,16 @@ decodeInt str =
 
 
 {-| Decode a float
+    >>> import Xml.Encode exposing (Value(FloatNode))
+    >>> decodeFloat "hello"
+    Err "could not convert string 'hello' to a Float"
+
+    >>> decodeFloat "5"
+    Ok (FloatNode 5.0)
+
+    >>> decodeFloat "5.5"
+    Ok (FloatNode 5.5)
+
 -}
 decodeFloat : String -> Result String Value
 decodeFloat str =
@@ -203,6 +223,11 @@ decodeBool str =
 
 
 {-| Decode children from a string
+
+    >>> import Xml.Encode exposing (Value(Object, Tag, StrNode))
+    >>> decodeChildren "<name>hello</name>"
+    Ok (Object [Tag "name" Dict.empty (StrNode "hello")] )
+
 -}
 decodeChildren : String -> Result String Value
 decodeChildren str =
