@@ -1,4 +1,4 @@
-module Xml.Query exposing (tags, contains, tag, collect, string, int, float, bool)
+module Xml.Query exposing (tags, contains, tag, collect, string, int, float, bool, default)
 
 {-|
 
@@ -6,7 +6,7 @@ module Xml.Query exposing (tags, contains, tag, collect, string, int, float, boo
 
 @docs tags, contains
 
-@docs tag, collect
+@docs tag, collect, default
 
 @docs string, int, float, bool
 -}
@@ -129,6 +129,19 @@ bool value =
 
         _ ->
             Err "Not a bool"
+
+
+{-|
+    Set a default for a result
+-}
+default : b -> Result a b -> Result a b
+default b res =
+    case res of
+        Ok _ ->
+            res
+
+        Err _ ->
+            Ok b
 
 
 {-| Search an XML value for any tags matching

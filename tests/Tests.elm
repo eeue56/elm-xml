@@ -171,4 +171,9 @@ all =
                 Expect.equal
                     ExampleStuff.correctPeople
                     ExampleStuff.people
+        , test "when parsing complex XML, it finds everything as it should" <|
+            \_ ->
+                Expect.equal
+                    (List.length <| Result.withDefault [] <| ExampleStuff.fromXML <| ExampleStuff.stuff)
+                    1000
         ]

@@ -3,6 +3,62 @@ module ExampleStuff exposing (..)
 import Xml.Encode exposing (Value(..), null)
 import Xml.Decode exposing (..)
 import Xml.Query exposing (..)
+import Date exposing (Date, Month(Jan))
+import Date.Extra as Date
+
+
+rebucket : a -> a
+rebucket =
+    identity
+
+
+type Unit
+    = Bytes Int
+
+
+type alias Object =
+    { time : Date
+    , size : Unit
+    , path : List String
+    }
+
+
+fromXML : String -> Result String (List Object)
+fromXML body =
+    let
+        getObject : Value -> Result String Object
+        getObject value =
+            let
+                time =
+                    tag "LastModified" (string >> (Result.andThen Date.fromString))
+                        >> default (Date.fromParts 1970 Jan 1 0 0 0 0)
+
+                size =
+                    tag "Size" (int >> Result.map (Bytes >> rebucket))
+                        >> default (Bytes 0)
+
+                path =
+                    tag "Key" (string >> Result.map (String.split "/"))
+                        >> default []
+            in
+                Result.map3
+                    (\time size path ->
+                        { time = time
+                        , size = size
+                        , path = path
+                        }
+                    )
+                    (time value)
+                    (size value)
+                    (path value)
+    in
+        decode body
+            |> Result.map
+                (tags "ListBucketResult"
+                    >> List.map (tags "Contents")
+                    >> List.concat
+                    >> collect getObject
+                )
 
 
 stuff =
