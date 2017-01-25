@@ -1,4 +1,4 @@
-module Xml.Query exposing (tags, contains, tag, collect, string, int)
+module Xml.Query exposing (tags, contains, tag, collect, string, int, float, bool)
 
 {-|
 
@@ -6,7 +6,9 @@ module Xml.Query exposing (tags, contains, tag, collect, string, int)
 
 @docs tags, contains
 
-@docs collect, string, int, tag
+@docs tag, collect
+
+@docs string, int, float, bool
 -}
 
 import Xml.Encode exposing (Value(..))
@@ -93,6 +95,40 @@ int value =
 
         _ ->
             Err "Not an int"
+
+
+{-| Try to turn a value into an int
+    >>> float (FloatNode 5.5)
+    Ok 5.5
+
+    >>> float (StrNode "hello")
+    Err "Not a float"
+-}
+float : Value -> Result String Float
+float value =
+    case value of
+        FloatNode n ->
+            Ok n
+
+        _ ->
+            Err "Not a float"
+
+
+{-| Try to turn a value into an int
+    >>> bool (BoolNode True)
+    Ok True
+
+    >>> bool (StrNode "hello")
+    Err "Not a bool"
+-}
+bool : Value -> Result String Bool
+bool value =
+    case value of
+        BoolNode b ->
+            Ok b
+
+        _ ->
+            Err "Not a bool"
 
 
 {-| Search an XML value for any tags matching
