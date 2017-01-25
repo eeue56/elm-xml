@@ -5,6 +5,8 @@ First bring XML into Elm as a `Value`. Once imported as a Value, you can then ei
 
 Or you can turn it back to a string using `Xml.Encode.encode`. Or pull it apart using `Xml.Encode.Value`.
 
+In order to turn an `Xml.Value` into a record, you probably want `Xml.Query`, paired with `Result.map`.
+
 ```elm
 
 import Xml.Encode exposing (Value, null)
@@ -28,8 +30,27 @@ decodedXml =
 		|> Maybe.withDefault null
 
 
-people : List Value
+type alias Person = 
+	{ name: String
+	, age: Int
+	}
+
+person : Value -> Result String Person
+person value =
+    Result.map2
+        (\name age ->
+            { name = name
+            , age = age
+            }
+        )
+        (tag "name" string value)
+        (tag "age" int value)
+
+
+people : List Person
 people =
-	tags "person" decodedXml
+    tags "person" decodedXml
+        |> collect person
+
 
 ```

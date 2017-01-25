@@ -6,7 +6,7 @@ import Expect
 import String
 import Xml.Encode exposing (..)
 import Xml.Decode exposing (..)
-import Xml.Query exposing (..)
+import Xml.Query exposing (tags, contains)
 import ExampleStuff
 
 
@@ -166,4 +166,9 @@ all =
                         |> List.length
                     )
                     1000
+        , test "The query for finding people should find the right tags" <|
+            \_ ->
+                Expect.equal
+                    ExampleStuff.correctPeople
+                    ExampleStuff.people
         ]

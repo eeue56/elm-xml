@@ -1,13 +1,98 @@
-module Xml.Query exposing (tags, contains)
+module Xml.Query exposing (tags, contains, tag, collect, string, int)
 
 {-|
 
 # Search the parsed XML
 
 @docs tags, contains
+
+@docs collect, string, int, tag
 -}
 
 import Xml.Encode exposing (Value(..))
+
+
+{-| Try to get a given tag name out from an XML value, then grab the value from that
+    Grabs the first tag that matches in the object
+
+    >>> import Xml.Encode exposing (Value(..))
+
+    >>> tag "name" string (Tag "name" Dict.empty (StrNode "noah"))
+    Ok "noah"
+
+    >>> tag "name" string (Tag "name" Dict.empty (IntNode 5))
+    Err "Not a string."
+
+    >>> tag "name" string (StrNode "noah")
+    Err "No tag called 'name' found."
+-}
+tag : String -> (Value -> Result String a) -> Value -> Result String a
+tag name converter value =
+    case tags name value of
+        [] ->
+            "No tag called '"
+                ++ name
+                ++ "' found."
+                |> Err
+
+        firstTag :: _ ->
+            case firstTag of
+                Tag _ _ nextValue ->
+                    converter nextValue
+
+                Object (x :: _) ->
+                    tag name converter x
+
+                _ ->
+                    Err "Not a tag"
+
+
+{-| Collect as many values that pass the given converter
+
+    >>> collect (tag "name" string) [Tag "name" Dict.empty (StrNode "noah")]
+    [ "noah" ]
+
+    >>> collect (tag "name" string) [Tag "name" Dict.empty (IntNode 5)]
+    [ ]
+-}
+collect : (Value -> Result String a) -> List Value -> List a
+collect fn values =
+    List.filterMap (fn >> Result.toMaybe) values
+
+
+{-| Try to turn a value into a string
+
+    >>> string (IntNode 5)
+    Err "Not a string."
+
+    >>> string (StrNode "hello")
+    Ok "hello"
+-}
+string : Value -> Result String String
+string value =
+    case value of
+        StrNode s ->
+            Ok s
+
+        _ ->
+            Err "Not a string."
+
+
+{-| Try to turn a value into an int
+    >>> int (IntNode 5)
+    Ok 5
+
+    >>> int (StrNode "hello")
+    Err "Not an int"
+-}
+int : Value -> Result String Int
+int value =
+    case value of
+        IntNode n ->
+            Ok n
+
+        _ ->
+            Err "Not an int"
 
 
 {-| Search an XML value for any tags matching
