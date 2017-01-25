@@ -133,6 +133,12 @@ bool value =
 
 {-|
     Set a default for a result
+
+    >> default "Cat" (Ok "Fish")
+    Ok "Fish"
+
+    >> default "Dog" (Err "flip")
+    Ok "Dog"
 -}
 default : b -> Result a b -> Result a b
 default b res =
