@@ -2,6 +2,7 @@
   "root": "../src",
   "tests": [
 	"Xml.Decode", 
-	"Xml.Query"
+	"Xml.Query",
+	"Xml.Encode"
   ]
 }
