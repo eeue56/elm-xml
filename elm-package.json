@@ -9,7 +9,8 @@
     "exposed-modules": [
         "Xml.Encode",
         "Xml.Decode",
-        "Xml.Query"
+        "Xml.Query",
+        "Xml"
     ],
     "dependencies": {
         "elm-lang/core": "5.0.0 <= v < 6.0.0",

@@ -11,13 +11,13 @@ module Xml.Query exposing (tags, contains, tag, collect, string, int, float, boo
 @docs string, int, float, bool
 -}
 
-import Xml.Encode exposing (Value(..))
+import Xml exposing (Value(..))
 
 
 {-| Try to get a given tag name out from an XML value, then grab the value from that
     Grabs the first tag that matches in the object
 
-    >>> import Xml.Encode exposing (Value(..))
+    >>> import Xml exposing (Value(..))
 
     >>> tag "name" string (Tag "name" Dict.empty (StrNode "noah"))
     Ok "noah"
@@ -152,7 +152,8 @@ default b res =
 
 {-| Search an XML value for any tags matching
 
-    >>> import Xml.Encode exposing (object, null, encode, Value(Tag, Object))
+    >>> import Xml exposing (Value(..))
+    >>> import Xml.Encode exposing (object, null, encode)
     >>> import Dict
     >>> object [ ("name", Dict.empty, null)] |> tags "name"
     [Tag "name" Dict.empty (Object []) ]

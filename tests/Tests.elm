@@ -4,6 +4,7 @@ import Dict
 import Test exposing (..)
 import Expect
 import String
+import Xml exposing (..)
 import Xml.Encode exposing (..)
 import Xml.Decode exposing (..)
 import Xml.Query exposing (tags, contains)

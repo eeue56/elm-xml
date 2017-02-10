@@ -10,8 +10,8 @@ module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decode
 -}
 
 import Dict
-import Xml.Encode exposing (Value(..))
 import Regex exposing (Regex)
+import Xml exposing (Value(..))
 
 
 {-| Try and decode the props from a string
@@ -147,7 +147,8 @@ actualDecode text =
 
 
 {-| Try to decode a string and turn it into an XML value
-    >>> import Xml.Encode exposing (Value(Tag, Object), null)
+    >>> import Xml exposing(Value(Tag, Object))
+    >>> import Xml.Encode exposing (null)
     >>> import Dict
     >>> decode "<name></name>"
     Ok (Object [Tag "name" Dict.empty null])
@@ -165,7 +166,7 @@ decode text =
 
 {-| Decode a string
 
-    >>> import Xml.Encode exposing (Value(StrNode))
+    >>> import Xml exposing (Value(StrNode))
     >>> decodeString "hello"
     Ok (StrNode "hello")
 -}
@@ -176,7 +177,7 @@ decodeString str =
 
 
 {-| Decode a int
-    >>> import Xml.Encode exposing (Value(IntNode))
+    >>> import Xml exposing (Value(IntNode))
     >>> decodeInt "hello"
     Err "could not convert string 'hello' to an Int"
 
@@ -195,7 +196,7 @@ decodeInt str =
 
 
 {-| Decode a float
-    >>> import Xml.Encode exposing (Value(FloatNode))
+    >>> import Xml exposing (Value(FloatNode))
     >>> decodeFloat "hello"
     Err "could not convert string 'hello' to a Float"
 
@@ -233,7 +234,7 @@ decodeBool str =
 
 {-| Decode children from a string
 
-    >>> import Xml.Encode exposing (Value(Object, Tag, StrNode))
+    >>> import Xml exposing (Value(Object, Tag, StrNode))
     >>> decodeChildren "<name>hello</name>"
     Ok (Object [Tag "name" Dict.empty (StrNode "hello")] )
 

@@ -1,6 +1,7 @@
 module ExampleStuff exposing (..)
 
-import Xml.Encode exposing (Value(..), null)
+import Xml exposing (Value(..))
+import Xml.Encode exposing (null)
 import Xml.Decode exposing (..)
 import Xml.Query exposing (..)
 import Date exposing (Date, Month(Jan))

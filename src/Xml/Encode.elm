@@ -1,10 +1,8 @@
-module Xml.Encode exposing (Value(..), encode, string, int, float, bool, object, null, list)
+module Xml.Encode exposing (encode, string, int, float, bool, object, null, list)
 
 {-|
     Use this module for turning your Elm data into an `Xml` representation that can be either
     queried or decoded, or turned into a string.
-
-@docs Value
 
 @docs encode
 
@@ -13,18 +11,7 @@ module Xml.Encode exposing (Value(..), encode, string, int, float, bool, object,
 
 import String
 import Dict exposing (Dict)
-
-
-{-| Representation of the XML tree
--}
-type Value
-    = Tag String (Dict String Value) Value
-    | StrNode String
-    | IntNode Int
-    | FloatNode Float
-    | BoolNode Bool
-    | Object (List Value)
-    | DocType String (Dict String Value)
+import Xml exposing (Value(..))
 
 
 propToString : Value -> String
