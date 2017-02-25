@@ -1,4 +1,4 @@
-module Xml exposing (Value(..), map, foldl, xmlToJson)
+module Xml exposing (Value(..), map, foldl, xmlToJson, jsonToXml)
 
 {-|
 
@@ -6,11 +6,12 @@ The main data structure along with some trivial helpers.
 
 @docs Value
 
-@docs foldl, map, xmlToJson
+@docs foldl, map, xmlToJson, jsonToXml
 -}
 
 import Dict exposing (Dict)
 import Json.Encode as Json
+import Json.Decode as JD
 
 
 {-| Representation of the XML tree
@@ -113,3 +114,45 @@ xmlToJson xml =
 
         DocType _ _ ->
             Json.null
+
+
+{-| A decoder for XML
+-}
+xmlDecoder : JD.Decoder Value
+xmlDecoder =
+    JD.oneOf
+        [ JD.map StrNode JD.string
+        , JD.map IntNode JD.int
+        , JD.map FloatNode JD.float
+        , JD.map BoolNode JD.bool
+        , JD.map Object (JD.list (JD.lazy (\_ -> xmlDecoder)))
+        , JD.map
+            (Dict.toList >> List.map (\( name, val ) -> Tag name Dict.empty val) >> Object)
+            (JD.dict (JD.lazy (\_ -> xmlDecoder)))
+        ]
+
+
+{-| Convert a `Json.Value` into an `Xml.Value`
+    >>> jsonToXml (Json.string "hello")
+    StrNode "hello"
+
+    >>> jsonToXml (Json.int 5)
+    IntNode 5
+
+    >>> jsonToXml (Json.float 10.5)
+    FloatNode 10.5
+
+    >>> jsonToXml (Json.bool True)
+    BoolNode True
+
+    >>> jsonToXml (Json.object [("name", Json.string "hello")])
+    Object [ Tag "name" Dict.empty (StrNode "hello") ]
+
+    >>> jsonToXml (Json.list [Json.string "name", Json.string "hello"])
+    Object [ StrNode "name", StrNode "hello" ]
+
+-}
+jsonToXml : Json.Value -> Value
+jsonToXml json =
+    JD.decodeValue xmlDecoder json
+        |> Result.withDefault (Object [])
