@@ -3,6 +3,7 @@
   "tests": [
 	"Xml.Decode", 
 	"Xml.Query",
-	"Xml.Encode"
+	"Xml.Encode",
+	"Xml"
   ]
 }

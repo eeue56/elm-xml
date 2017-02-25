@@ -1,4 +1,4 @@
-module Xml exposing (Value(..), map, foldl)
+module Xml exposing (Value(..), map, foldl, xmlToJson)
 
 {-|
 
@@ -6,10 +6,11 @@ The main data structure along with some trivial helpers.
 
 @docs Value
 
-@docs foldl, map
+@docs foldl, map, xmlToJson
 -}
 
 import Dict exposing (Dict)
+import Json.Encode as Json
 
 
 {-| Representation of the XML tree
@@ -57,3 +58,58 @@ foldl fn init value =
 
         anything ->
             fn anything init
+
+
+{-| Convert an `Xml.Value` to a `Json.Value`
+
+    >>> import Dict
+    >>> import Json.Encode as Json
+    >>> xmlToJson (StrNode "hello")
+    Json.string "hello"
+
+    >>> xmlToJson (IntNode 5)
+    Json.int 5
+
+    >>> xmlToJson (FloatNode 5)
+    Json.float 5
+
+    >>> xmlToJson (BoolNode True)
+    Json.bool True
+
+    >>> xmlToJson (Object [ IntNode 5, BoolNode True ])
+    Json.list [Json.int 5, Json.bool True]
+
+    >>> xmlToJson (DocType "" Dict.empty)
+    Json.null
+-}
+xmlToJson : Value -> Json.Value
+xmlToJson xml =
+    case xml of
+        Tag name attributes nextValue ->
+            let
+                jsonAttrs =
+                    Dict.toList attributes
+                        |> List.map (\( name, value ) -> ( name, xmlToJson value ))
+                        |> (\list -> list ++ [ ( "value", xmlToJson nextValue ) ])
+                        |> Json.object
+            in
+                Json.object [ ( name, jsonAttrs ) ]
+
+        StrNode str ->
+            Json.string str
+
+        IntNode int ->
+            Json.int int
+
+        FloatNode float ->
+            Json.float float
+
+        BoolNode bool ->
+            Json.bool bool
+
+        Object values ->
+            List.map xmlToJson values
+                |> Json.list
+
+        DocType _ _ ->
+            Json.null
