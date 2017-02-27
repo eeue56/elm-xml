@@ -97,6 +97,10 @@ parseSlice first firstClose trimmed =
             [] ->
                 if String.startsWith "?" tagName then
                     Ok ( DocType tagName props, firstClose + 1 )
+                else if String.endsWith "/" beforeClose then
+                    Ok ( Tag tagName props (Object []), firstClose + 1 )
+                else if String.startsWith "!" tagName then
+                    Ok ( Object [], firstClose + 1 )
                 else
                     "Failed to find close tag for "
                         ++ tagName
