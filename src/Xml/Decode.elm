@@ -97,6 +97,8 @@ parseSlice first firstClose trimmed =
             [] ->
                 if String.startsWith "?" tagName then
                     Ok ( DocType tagName props, firstClose + 1 )
+                else if (List.reverse words |> List.head |> Maybe.withDefault "") == "/" then
+                    Ok ( Tag tagName props (Object []), firstClose )
                 else
                     "Failed to find close tag for "
                         ++ tagName
