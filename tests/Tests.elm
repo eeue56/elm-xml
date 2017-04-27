@@ -18,7 +18,6 @@ example =
         , ( "age", Dict.empty, int 5 )
         ]
 
-
 exampleAsString : String
 exampleAsString =
     """
@@ -27,6 +26,26 @@ exampleAsString =
 """
         |> String.trim
 
+selfClosingExampleAsString : String
+selfClosingExampleAsString =
+  """
+<person>
+    <name is="me">noah</name>
+    <here is="false" />
+</person>
+"""
+
+selfClosingExample : Value
+selfClosingExample =
+  object [
+    ( "person"
+          , Dict.empty
+          , object
+                [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "noah" )
+                , ( "here", Dict.fromList [ ( "is", bool False ) ], null )
+                ]
+          )
+    ]
 
 exampleWithProps : Value
 exampleWithProps =
@@ -127,6 +146,9 @@ all =
         , test "a nested tag is decoded properly" <|
             \_ ->
                 Expect.equal (decode nestedExampleAsString) (Ok nestedExample)
+        , test "a self closing tag is decoded properly" <|
+            \_ ->
+                Expect.equal (decode selfClosingExampleAsString) (Ok selfClosingExample)
         , test "a bad xml is an error" <|
             \_ ->
                 Expect.false "xml is not parsed without a closing tag"
