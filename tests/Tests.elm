@@ -30,8 +30,9 @@ selfClosingExampleAsString : String
 selfClosingExampleAsString =
   """
 <person>
-    <name is="me">noah</name>
+    <name is="me">kitofr</name>
     <here is="false" />
+    <there is="true" />
 </person>
 """
 
@@ -41,8 +42,9 @@ selfClosingExample =
     ( "person"
           , Dict.empty
           , object
-                [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "noah" )
+                [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "kitofr" )
                 , ( "here", Dict.fromList [ ( "is", bool False ) ], null )
+                , ( "there", Dict.fromList [ ( "is", bool True ) ], null )
                 ]
           )
     ]
