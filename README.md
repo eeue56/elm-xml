@@ -9,10 +9,10 @@ In order to turn an `Xml.Value` into a record, you probably want `Xml.Query`, pa
 
 ```elm
 
-import Xml exposing (Value(..))
+import Xml exposing (Value)
 import Xml.Encode exposing (null)
 import Xml.Decode exposing (decode)
-import Xml.Query exposing (tags, tag, string, collect)
+import Xml.Query exposing (tags)
 
 decodedXml : Value
 decodedXml = 
