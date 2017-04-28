@@ -97,7 +97,7 @@ parseSlice first firstClose trimmed =
             [] ->
                 if String.startsWith "?" tagName then
                     Ok ( DocType tagName props, firstClose + 1 )
-                else if (String.endsWith "/>" trimmed) then
+                else if (String.contains "/>" trimmed) then
                     Ok ( Tag tagName props (Object []), firstClose + 1 )
                 else
                     "Failed to find close tag for "
@@ -120,18 +120,19 @@ parseSlice first firstClose trimmed =
 actualDecode : String -> Result String (List Value)
 actualDecode text =
     let
+        txt = String.trim text
         openIndexes =
-            String.indexes "<" text
+            String.indexes "<" txt
 
         closeIndexes =
-            String.indexes ">" text
+            String.indexes ">" txt
     in
         case ( openIndexes, closeIndexes ) of
             ( first :: restFirst, firstClose :: restFirstClose ) ->
-                parseSlice first firstClose text
+                parseSlice first firstClose txt
                     |> Result.andThen
                         (\( foundValue, firstCloseTag ) ->
-                            case actualDecode (String.slice firstCloseTag (String.length text + 1) text) of
+                            case actualDecode (String.slice firstCloseTag (String.length txt + 1) txt) of
                                 Err err ->
                                     if err == "Nothing left" then
                                         Ok [ foundValue ]
