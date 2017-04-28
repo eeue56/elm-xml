@@ -120,19 +120,18 @@ parseSlice first firstClose trimmed =
 actualDecode : String -> Result String (List Value)
 actualDecode text =
     let
-        txt = String.trim text
         openIndexes =
-            String.indexes "<" txt
+            String.indexes "<" text
 
         closeIndexes =
-            String.indexes ">" txt
+            String.indexes ">" text
     in
         case ( openIndexes, closeIndexes ) of
             ( first :: restFirst, firstClose :: restFirstClose ) ->
-                parseSlice first firstClose txt
+                parseSlice first firstClose text
                     |> Result.andThen
                         (\( foundValue, firstCloseTag ) ->
-                            case actualDecode (String.slice firstCloseTag (String.length txt + 1) txt) of
+                            case actualDecode (String.slice firstCloseTag (String.length text + 1) text) of
                                 Err err ->
                                     if err == "Nothing left" then
                                         Ok [ foundValue ]
