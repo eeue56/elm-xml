@@ -1,4 +1,4 @@
-# elm-xml
+# elm-xml [![Build Status](https://travis-ci.org/eeue56/elm-xml.svg?branch=master)](https://travis-ci.org/eeue56/elm-xml)
 xml parser for elm
 
 First bring XML into Elm as a `Value`. Once imported as a Value, you can then either query the values with `Xml.Query`.
