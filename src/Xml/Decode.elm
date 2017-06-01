@@ -1,17 +1,19 @@
 module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decodeBool, decodeChildren)
 
-{-|
+{-| .
 
 @docs decode
 
 @docs decodeInt, decodeFloat, decodeString, decodeString, decodeBool
 
 @docs decodeChildren
+
 -}
 
 import Dict
 import Regex exposing (Regex)
 import Xml exposing (Value(..))
+import Tuple exposing (second)
 
 
 {-| Try and decode the props from a string
@@ -72,11 +74,19 @@ findProps =
         >> Dict.fromList
 
 
+type Tag
+    = OpenTag
+    | CloseTag
+
+
 parseSlice : Int -> Int -> String -> Result String ( Value, Int )
 parseSlice first firstClose trimmed =
     let
         beforeClose =
             String.slice (first + 1) firstClose trimmed
+
+        afterOpen =
+            String.slice (first + 1) (String.length trimmed) trimmed
 
         words =
             beforeClose
@@ -91,20 +101,59 @@ parseSlice first firstClose trimmed =
             findProps words
 
         closeTag =
-            "</" ++ tagName ++ ">"
+            "</"
+                ++ tagName
+                ++ ">"
+
+        openTag =
+            "<"
+                ++ Regex.escape tagName
+                ++ "[\\s\\n]*[^/]*?>"
+                |> Regex.regex
+
+        openTags =
+            Regex.find Regex.All openTag afterOpen
+                |> List.map (.index >> (,) OpenTag)
+
+        closeTags =
+            String.indexes closeTag trimmed
+                |> List.map ((,) CloseTag)
+
+        allTags =
+            openTags
+                ++ closeTags
+                |> List.sortBy second
+
+        reduce list =
+            case list of
+                ( OpenTag, i1 ) :: ( CloseTag, i2 ) :: rest ->
+                    reduce rest
+
+                ( OpenTag, i1 ) :: rest ->
+                    case reduce rest of
+                        ( CloseTag, i2 ) :: rest ->
+                            reduce rest
+
+                        rest ->
+                            rest
+
+                _ ->
+                    list
     in
-        case String.indexes closeTag trimmed of
-            [] ->
+        case List.head <| reduce allTags of
+            Nothing ->
                 if String.startsWith "?" tagName then
                     Ok ( DocType tagName props, firstClose + 1 )
-                else if (String.contains "/>" trimmed) then
+                else if String.endsWith "/" beforeClose then
                     Ok ( Tag tagName props (Object []), firstClose + 1 )
+                else if String.startsWith "!" tagName then
+                    Ok ( Object [], firstClose + 1 )
                 else
                     "Failed to find close tag for "
                         ++ tagName
                         |> Err
 
-            firstCloseTag :: _ ->
+            Just ( _, firstCloseTag ) ->
                 let
                     contents =
                         String.slice (firstClose + 1) (firstCloseTag) trimmed
@@ -149,11 +198,13 @@ actualDecode text =
 
 
 {-| Try to decode a string and turn it into an XML value
-    >>> import Xml exposing(Value(Tag, Object))
-    >>> import Xml.Encode exposing (null)
-    >>> import Dict
-    >>> decode "<name></name>"
-    Ok (Object [Tag "name" Dict.empty null])
+
+> > > import Xml exposing(Value(Tag, Object))
+> > > import Xml.Encode exposing (null)
+> > > import Dict
+> > > decode "<name></name>"
+> > > Ok (Object [Tag "name" Dict.empty null])
+
 -}
 decode : String -> Result String Value
 decode text =
@@ -171,6 +222,7 @@ decode text =
     >>> import Xml exposing (Value(StrNode))
     >>> decodeString "hello"
     Ok (StrNode "hello")
+
 -}
 decodeString : String -> Result String Value
 decodeString str =
@@ -179,12 +231,14 @@ decodeString str =
 
 
 {-| Decode a int
-    >>> import Xml exposing (Value(IntNode))
-    >>> decodeInt "hello"
-    Err "could not convert string 'hello' to an Int"
+
+> > > import Xml exposing (Value(IntNode))
+> > > decodeInt "hello"
+> > > Err "could not convert string 'hello' to an Int"
 
     >>> decodeInt "5"
     Ok (IntNode 5)
+
 -}
 decodeInt : String -> Result String Value
 decodeInt str =
@@ -198,9 +252,10 @@ decodeInt str =
 
 
 {-| Decode a float
-    >>> import Xml exposing (Value(FloatNode))
-    >>> decodeFloat "hello"
-    Err "could not convert string 'hello' to a Float"
+
+> > > import Xml exposing (Value(FloatNode))
+> > > decodeFloat "hello"
+> > > Err "could not convert string 'hello' to a Float"
 
     >>> decodeFloat "5"
     Ok (FloatNode 5.0)

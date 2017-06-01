@@ -128,6 +128,50 @@ nestedExampleAsString =
         |> String.trim
 
 
+nestedSelfExample : Value
+nestedSelfExample =
+    object
+        [ ( "g"
+          , Dict.singleton "id" (string "foo")
+          , object
+                [ ( "g", Dict.singleton "id" (string "bla"), string "group" )
+                ]
+          )
+        ]
+
+
+nestedSelfExampleAsString : String
+nestedSelfExampleAsString =
+    """
+<g id="foo">
+    <g id="bla">group</g>
+</g>
+"""
+        |> String.trim
+
+
+nestedSelfExampleWithoutProps : Value
+nestedSelfExampleWithoutProps =
+    object
+        [ ( "g"
+          , Dict.empty
+          , object
+                [ ( "g", Dict.empty, string "group" )
+                ]
+          )
+        ]
+
+
+nestedSelfExampleWithoutPropsAsString : String
+nestedSelfExampleWithoutPropsAsString =
+    """
+<g>
+    <g>group</g>
+</g>
+"""
+        |> String.trim
+
+
 decodedExampleStuff : Result String Value
 decodedExampleStuff =
     decode ExampleStuff.stuff
@@ -154,6 +198,12 @@ all =
         , test "a nested tag is decoded properly" <|
             \_ ->
                 Expect.equal (decode nestedExampleAsString) (Ok nestedExample)
+        , test "a self nested tag is encoded properly" <|
+            \_ ->
+                Expect.equal nestedSelfExampleAsString (encode 4 nestedSelfExample)
+        , test "a self nested tag is decoded properly" <|
+            \_ ->
+                Expect.equal (decode nestedSelfExampleAsString) (Ok nestedSelfExample)
         , test "a self closing tag is decoded properly" <|
             \_ ->
                 Expect.equal (decode selfClosingExampleAsString) (Ok selfClosingExample)
