@@ -34,6 +34,7 @@ selfClosingExampleAsString =
 <person>
     <name is="me">kitofr</name>
     <here is="false" />
+    <there/>
     <here is="true"/>
     <name is="me">kitofr</name>
 </person>
@@ -48,6 +49,7 @@ selfClosingExample =
           , object
                 [ ( "name", Dict.fromList [ ( "is", string "me" ) ], string "kitofr" )
                 , ( "here", Dict.fromList [ ( "is", bool False ) ], null )
+                , ( "there", Dict.fromList [], null )
                 , ( "here", Dict.fromList [ ( "is", bool True ) ], null )
                 , ( "name", Dict.fromList [ ( "is", string "me" ) ], string "kitofr" )
                 ]
@@ -237,7 +239,7 @@ all =
                         |> List.length
                     )
                     1
-        , test "the XML contains a node we expect" <|
+        , test "the other XML contains a node we expect" <|
             \_ ->
                 Expect.equal
                     (decodedExampleStuff
