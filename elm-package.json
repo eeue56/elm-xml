@@ -1,5 +1,5 @@
 {
-    "version": "2.2.2",
+    "version": "2.2.3",
     "summary": "XML parser, encoder/decoder and queries in Elm",
     "repository": "https://github.com/eeue56/elm-xml.git",
     "license": "BSD3",

@@ -12,6 +12,7 @@ module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decode
 import Dict
 import Regex exposing (Regex)
 import Xml exposing (Value(..))
+import Tuple exposing (second)
 
 
 {-| Try and decode the props from a string
@@ -72,11 +73,19 @@ findProps =
         >> Dict.fromList
 
 
+type Tag
+    = OpenTag
+    | CloseTag
+
+
 parseSlice : Int -> Int -> String -> Result String ( Value, Int )
 parseSlice first firstClose trimmed =
     let
         beforeClose =
             String.slice (first + 1) firstClose trimmed
+
+        afterOpen =
+            String.slice (first + 1) (String.length trimmed) trimmed
 
         words =
             beforeClose
@@ -92,19 +101,59 @@ parseSlice first firstClose trimmed =
 
         closeTag =
             "</" ++ tagName ++ ">"
+
+        openTag =
+            "<" ++ Regex.escape tagName ++ "[\\s\\n]*[^/]*?>" 
+            |> Regex.regex
+
+        openTags =
+            Regex.find Regex.All openTag afterOpen
+                |> List.map (.index >> (,) OpenTag)
+
+        closeTags =
+            String.indexes closeTag trimmed
+                |> List.map ((,) CloseTag)
+
+        allTags =
+            openTags
+                ++ closeTags
+                |> List.sortBy second
+
+        reduce list =
+            case list of
+                ( OpenTag, i1 ) :: ( CloseTag, i2 ) :: rest ->
+                    reduce rest
+
+                ( OpenTag, i1 ) :: rest ->
+                    case reduce rest of
+                        ( CloseTag, i2 ) :: rest ->
+                            reduce rest
+
+                        rest ->
+                            rest
+
+                _ ->
+                    list
     in
-        case String.indexes closeTag trimmed of
-            [] ->
+        case List.head <| reduce allTags of
+            Nothing ->
                 if String.startsWith "?" tagName then
                     Ok ( DocType tagName props, firstClose + 1 )
-                else if (String.contains "/>" trimmed) then
-                    Ok ( Tag tagName props (Object []), firstClose + 1 )
+                else if String.endsWith "/" beforeClose then
+                    let tag = if String.endsWith "/" tagName then
+                                  String.slice 0 -1 tagName
+                              else
+                                  tagName
+                    in
+                        Ok ( Tag tag props (Object []), firstClose + 1 )
+                else if String.startsWith "!" tagName then
+                    Ok ( Object [], firstClose + 1 )
                 else
                     "Failed to find close tag for "
                         ++ tagName
                         |> Err
 
-            firstCloseTag :: _ ->
+            Just ( _, firstCloseTag ) ->
                 let
                     contents =
                         String.slice (firstClose + 1) (firstCloseTag) trimmed
