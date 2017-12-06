@@ -198,7 +198,7 @@ all =
                         |> tags "Contents"
                         |> List.length
                     )
-                    1000
+                    100
         , test "The query for finding people should find the right tags" <|
             \_ ->
                 Expect.equal
@@ -208,5 +208,5 @@ all =
             \_ ->
                 Expect.equal
                     (List.length <| Result.withDefault [] <| ExampleStuff.fromXML <| ExampleStuff.stuff)
-                    1000
+                    100
         ]
