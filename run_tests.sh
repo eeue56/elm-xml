@@ -1,4 +1,4 @@
 #!/bin/bash
 
-elm-doc-test
+elm-verify-examples
 elm-test

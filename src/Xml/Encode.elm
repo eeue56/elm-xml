@@ -117,8 +117,9 @@ encode indent value =
 
 
 {-| Encode a string
-    >>> string "hello" |> encode 0
-    "hello"
+
+    string "hello" |> encode 0
+    --> "hello"
 -}
 string : String -> Value
 string str =
@@ -126,8 +127,9 @@ string str =
 
 
 {-| Encode an int
-    >>> int 15 |> encode 0
-    "15"
+
+    int 15 |> encode 0
+    --> "15"
 -}
 int : Int -> Value
 int n =
@@ -135,8 +137,9 @@ int n =
 
 
 {-| Encode a float
-    >>> float 1.576 |> encode 0
-    "1.576"
+
+    float 1.576 |> encode 0
+    --> "1.576"
 -}
 float : Float -> Value
 float n =
@@ -144,11 +147,12 @@ float n =
 
 
 {-| Encode a bool
-    >>> bool True |> encode 0
-    "true"
 
-    >>> bool True |> encode 0
-    "true"
+    bool True |> encode 0
+    --> "true"
+
+    bool True |> encode 0
+    --> "true"
 -}
 bool : Bool -> Value
 bool b =
@@ -164,9 +168,10 @@ object values =
 
 
 {-| Encode a list of nodes, e.g
-    >>> import Dict
-    >>> list [ object [ ("Root", Dict.empty, null) ], int 5 ] |> encode 0
-    "<Root></Root>\n5"
+    import Dict
+
+    list [ object [ ("Root", Dict.empty, null) ], int 5 ] |> encode 0
+    --> "<Root></Root>\n5"
 -}
 list : List Value -> Value
 list values =
@@ -174,8 +179,9 @@ list values =
 
 
 {-| Empty contents
-    >>> null |> encode 0
-    ""
+
+    null |> encode 0
+    --> ""
 -}
 null : Value
 null =

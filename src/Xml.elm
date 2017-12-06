@@ -63,25 +63,26 @@ foldl fn init value =
 
 {-| Convert an `Xml.Value` to a `Json.Value`
 
-    >>> import Dict
-    >>> import Json.Encode as Json
-    >>> xmlToJson (StrNode "hello")
-    Json.string "hello"
+    import Dict
+    import Json.Encode as Json
 
-    >>> xmlToJson (IntNode 5)
-    Json.int 5
+    xmlToJson (StrNode "hello")
+    --> Json.string "hello"
 
-    >>> xmlToJson (FloatNode 5)
-    Json.float 5
+    xmlToJson (IntNode 5)
+    --> Json.int 5
 
-    >>> xmlToJson (BoolNode True)
-    Json.bool True
+    xmlToJson (FloatNode 5)
+    --> Json.float 5
 
-    >>> xmlToJson (Object [ IntNode 5, BoolNode True ])
-    Json.list [Json.int 5, Json.bool True]
+    xmlToJson (BoolNode True)
+    --> Json.bool True
 
-    >>> xmlToJson (DocType "" Dict.empty)
-    Json.null
+    xmlToJson (Object [ IntNode 5, BoolNode True ])
+    --> Json.list [Json.int 5, Json.bool True]
+
+    xmlToJson (DocType "" Dict.empty)
+    --> Json.null
 -}
 xmlToJson : Value -> Json.Value
 xmlToJson xml =
@@ -133,23 +134,24 @@ xmlDecoder =
 
 
 {-| Convert a `Json.Value` into an `Xml.Value`
-    >>> jsonToXml (Json.string "hello")
-    StrNode "hello"
 
-    >>> jsonToXml (Json.int 5)
-    IntNode 5
+    jsonToXml (Json.string "hello")
+    --> StrNode "hello"
 
-    >>> jsonToXml (Json.float 10.5)
-    FloatNode 10.5
+    jsonToXml (Json.int 5)
+    --> IntNode 5
 
-    >>> jsonToXml (Json.bool True)
-    BoolNode True
+    jsonToXml (Json.float 10.5)
+    --> FloatNode 10.5
 
-    >>> jsonToXml (Json.object [("name", Json.string "hello")])
-    Object [ Tag "name" Dict.empty (StrNode "hello") ]
+    jsonToXml (Json.bool True)
+    --> BoolNode True
 
-    >>> jsonToXml (Json.list [Json.string "name", Json.string "hello"])
-    Object [ StrNode "name", StrNode "hello" ]
+    jsonToXml (Json.object [("name", Json.string "hello")])
+    --> Object [ Tag "name" Dict.empty (StrNode "hello") ]
+
+    jsonToXml (Json.list [Json.string "name", Json.string "hello"])
+    --> Object [ StrNode "name", StrNode "hello" ]
 
 -}
 jsonToXml : Json.Value -> Value

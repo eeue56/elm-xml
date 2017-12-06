@@ -17,16 +17,16 @@ import Xml exposing (Value(..))
 {-| Try to get a given tag name out from an XML value, then grab the value from that
     Grabs the first tag that matches in the object
 
-    >>> import Xml exposing (Value(..))
+    import Xml exposing (Value(..))
 
-    >>> tag "name" string (Tag "name" Dict.empty (StrNode "noah"))
-    Ok "noah"
+    tag "name" string (Tag "name" Dict.empty (StrNode "noah"))
+    --> Ok "noah"
 
-    >>> tag "name" string (Tag "name" Dict.empty (IntNode 5))
-    Err "Not a string."
+    tag "name" string (Tag "name" Dict.empty (IntNode 5))
+    --> Err "Not a string."
 
-    >>> tag "name" string (StrNode "noah")
-    Err "No tag called 'name' found."
+    tag "name" string (StrNode "noah")
+    --> Err "No tag called 'name' found."
 -}
 tag : String -> (Value -> Result String a) -> Value -> Result String a
 tag name converter value =
@@ -51,11 +51,11 @@ tag name converter value =
 
 {-| Collect as many values that pass the given converter
 
-    >>> collect (tag "name" string) [Tag "name" Dict.empty (StrNode "noah")]
-    [ "noah" ]
+    collect (tag "name" string) [Tag "name" Dict.empty (StrNode "noah")]
+    --> [ "noah" ]
 
-    >>> collect (tag "name" string) [Tag "name" Dict.empty (IntNode 5)]
-    [ ]
+    collect (tag "name" string) [Tag "name" Dict.empty (IntNode 5)]
+    --> [ ]
 -}
 collect : (Value -> Result String a) -> List Value -> List a
 collect fn values =
@@ -64,11 +64,11 @@ collect fn values =
 
 {-| Try to turn a value into a string
 
-    >>> string (IntNode 5)
-    Err "Not a string."
+    string (IntNode 5)
+    --> Err "Not a string."
 
-    >>> string (StrNode "hello")
-    Ok "hello"
+    string (StrNode "hello")
+    --> Ok "hello"
 -}
 string : Value -> Result String String
 string value =
@@ -81,11 +81,12 @@ string value =
 
 
 {-| Try to turn a value into an int
-    >>> int (IntNode 5)
-    Ok 5
 
-    >>> int (StrNode "hello")
-    Err "Not an int"
+    int (IntNode 5)
+    --> Ok 5
+
+    int (StrNode "hello")
+    --> Err "Not an int"
 -}
 int : Value -> Result String Int
 int value =
@@ -98,11 +99,12 @@ int value =
 
 
 {-| Try to turn a value into an int
-    >>> float (FloatNode 5.5)
-    Ok 5.5
 
-    >>> float (StrNode "hello")
-    Err "Not a float"
+    float (FloatNode 5.5)
+    --> Ok 5.5
+
+    float (StrNode "hello")
+    --> Err "Not a float"
 -}
 float : Value -> Result String Float
 float value =
@@ -115,11 +117,12 @@ float value =
 
 
 {-| Try to turn a value into an int
-    >>> bool (BoolNode True)
-    Ok True
 
-    >>> bool (StrNode "hello")
-    Err "Not a bool"
+    bool (BoolNode True)
+    --> Ok True
+
+    bool (StrNode "hello")
+    --> Err "Not a bool"
 -}
 bool : Value -> Result String Bool
 bool value =
@@ -152,11 +155,12 @@ default b res =
 
 {-| Search an XML value for any tags matching
 
-    >>> import Xml exposing (Value(..))
-    >>> import Xml.Encode exposing (object, null, encode)
-    >>> import Dict
-    >>> object [ ("name", Dict.empty, null)] |> tags "name"
-    [Tag "name" Dict.empty (Object []) ]
+    import Xml exposing (Value(..))
+    import Xml.Encode exposing (object, null, encode)
+    import Dict
+
+    object [ ("name", Dict.empty, null)] |> tags "name"
+    --> [Tag "name" Dict.empty (Object []) ]
 
 -}
 tags : String -> Value -> List Value
