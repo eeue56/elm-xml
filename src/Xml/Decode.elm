@@ -186,7 +186,7 @@ decodeString str =
         |> Ok
 
 
-{-| Decode a int
+{-| Decode an int
     import Xml exposing (Value(IntNode))
 
     decodeInt "hello"

@@ -98,7 +98,7 @@ int value =
             Err "Not an int"
 
 
-{-| Try to turn a value into an int
+{-| Try to turn a value into a float
 
     float (FloatNode 5.5)
     --> Ok 5.5
@@ -116,7 +116,7 @@ float value =
             Err "Not a float"
 
 
-{-| Try to turn a value into an int
+{-| Try to turn a value into a bool
 
     bool (BoolNode True)
     --> Ok True
