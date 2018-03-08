@@ -4,7 +4,7 @@ module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decode
 
 @docs decode
 
-@docs decodeInt, decodeFloat, decodeString, decodeString, decodeBool
+@docs decodeInt, decodeFloat, decodeString, decodeBool
 
 @docs decodeChildren
 -}
