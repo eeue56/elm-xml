@@ -68,19 +68,31 @@ valueToString level indent value =
     case value of
         Tag name props nextValue ->
             let
-                indentString =
-                    if needsIndent nextValue then
+                indentation =
+                    String.repeat (indent * level // 2) " "
+
+                newlineNecessary =
+                    needsIndent nextValue
+
+                maybeNewline =
+                    if newlineNecessary then
                         "\n"
                     else
                         ""
             in
-                "<"
+                indentation
+                    ++ "<"
                     ++ name
                     ++ (propsToString props)
                     ++ ">"
-                    ++ indentString
+                    ++ maybeNewline
                     ++ (valueToString (level + 1) indent nextValue)
-                    ++ indentString
+                    ++ maybeNewline
+                    ++ (if newlineNecessary then
+                            indentation
+                        else
+                            ""
+                       )
                     ++ "</"
                     ++ name
                     ++ ">"
@@ -99,7 +111,6 @@ valueToString level indent value =
 
         Object xs ->
             List.map (valueToString (level + 1) indent) xs
-                |> List.map ((++) (String.repeat (level * indent) " "))
                 |> String.join "\n"
 
         DocType name props ->

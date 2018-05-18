@@ -135,6 +135,41 @@ decodedExampleStuff =
     decode ExampleStuff.stuff
 
 
+threeLayersAsString : String
+threeLayersAsString =
+    """
+<person>
+<name>
+  <firstname>Chris</firstname>
+  <lastname>topher</lastname>
+  <meta>
+    <suffix>Jr</suffix>
+  </meta>
+</name>
+</person>
+"""
+        |> String.trim
+
+
+threeLayers : Value
+threeLayers =
+    Tag "person" Dict.empty <|
+        Tag "name" Dict.empty <|
+            list
+                [ Tag "firstname" Dict.empty <| StrNode "Chris"
+                , Tag "lastname" Dict.empty <| StrNode "topher"
+                , Tag "meta" Dict.empty <|
+                    list
+                        [ Tag "suffix" Dict.empty <| StrNode "Jr"
+                        ]
+                ]
+
+
+encodedThreeLayers : String
+encodedThreeLayers =
+    encode 2 threeLayers
+
+
 all : Test
 all =
     describe "Encode test"
@@ -209,4 +244,7 @@ all =
                 Expect.equal
                     (List.length <| Result.withDefault [] <| ExampleStuff.fromXML <| ExampleStuff.stuff)
                     100
+        , test "three layers of tags are properly indented" <|
+            \_ ->
+                Expect.equal encodedThreeLayers threeLayersAsString
         ]
