@@ -12,10 +12,10 @@ In order to turn an `Xml.Value` into a record, you probably want `Xml.Query`, pa
 import Xml exposing (Value)
 import Xml.Encode exposing (null)
 import Xml.Decode exposing (decode)
-import Xml.Query exposing (tags)
+import Xml.Query exposing (collect, int, string, tag, tags)
 
 decodedXml : Value
-decodedXml = 
+decodedXml =
 	"""
 <person>
 	<name>noah</name>
@@ -31,7 +31,7 @@ decodedXml =
 		|> Maybe.withDefault null
 
 
-type alias Person = 
+type alias Person =
 	{ name: String
 	, age: Int
 	}
