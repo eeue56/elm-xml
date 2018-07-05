@@ -1,12 +1,11 @@
 module Xml.Decode exposing (decode, decodeInt, decodeString, decodeFloat, decodeBool, decodeChildren)
 
-{-|
-
-@docs decode
+{-| @docs decode
 
 @docs decodeInt, decodeFloat, decodeString, decodeString, decodeBool
 
 @docs decodeChildren
+
 -}
 
 import Dict
@@ -99,10 +98,11 @@ parseSlice first firstClose trimmed =
                     Ok ( DocType tagName props, firstClose + 1 )
                 else if String.endsWith "/" beforeClose then
                     let
-                        tag = if String.endsWith "/" tagName then
-                                  String.slice 0 -1 tagName
-                              else
-                                  tagName
+                        tag =
+                            if String.endsWith "/" tagName then
+                                String.slice 0 -1 tagName
+                            else
+                                tagName
                     in
                         Ok ( Tag tag props (Object []), firstClose + 1 )
                 else
@@ -155,12 +155,14 @@ actualDecode text =
 
 
 {-| Try to decode a string and turn it into an XML value
+
+    import Dict
     import Xml exposing(Value(Tag, Object))
     import Xml.Encode exposing (null)
-    import Dict
 
     decode "<name></name>"
     --> Ok (Object [Tag "name" Dict.empty null])
+
 -}
 decode : String -> Result String Value
 decode text =
@@ -179,6 +181,7 @@ decode text =
 
     decodeString "hello"
     --> Ok (StrNode "hello")
+
 -}
 decodeString : String -> Result String Value
 decodeString str =
@@ -187,6 +190,7 @@ decodeString str =
 
 
 {-| Decode a int
+
     import Xml exposing (Value(IntNode))
 
     decodeInt "hello"
@@ -194,6 +198,7 @@ decodeString str =
 
     decodeInt "5"
     --> Ok (IntNode 5)
+
 -}
 decodeInt : String -> Result String Value
 decodeInt str =
@@ -207,6 +212,7 @@ decodeInt str =
 
 
 {-| Decode a float
+
     import Xml exposing (Value(FloatNode))
 
     decodeFloat "hello"
@@ -246,6 +252,7 @@ decodeBool str =
 
 {-| Decode children from a string
 
+    import Dict
     import Xml exposing (Value(Object, Tag, StrNode))
 
     decodeChildren "<name>hello</name>"

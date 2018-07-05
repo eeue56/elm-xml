@@ -1,12 +1,11 @@
 module Xml exposing (Value(..), map, foldl, xmlToJson, jsonToXml)
 
-{-|
-
-The main data structure along with some trivial helpers.
+{-| The main data structure along with some trivial helpers.
 
 @docs Value
 
 @docs foldl, map, xmlToJson, jsonToXml
+
 -}
 
 import Dict exposing (Dict)
@@ -27,6 +26,7 @@ type Value
 
 
 {-|
+
     Standard mapping of a value to another value
 -}
 map : (Value -> Value) -> Value -> Value
@@ -83,6 +83,7 @@ foldl fn init value =
 
     xmlToJson (DocType "" Dict.empty)
     --> Json.null
+
 -}
 xmlToJson : Value -> Json.Value
 xmlToJson xml =
@@ -134,6 +135,9 @@ xmlDecoder =
 
 
 {-| Convert a `Json.Value` into an `Xml.Value`
+
+    import Dict
+    import Json.Encode as Json
 
     jsonToXml (Json.string "hello")
     --> StrNode "hello"

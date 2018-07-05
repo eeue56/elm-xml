@@ -2,6 +2,7 @@ module Xml.Query exposing (tags, contains, tag, collect, string, int, float, boo
 
 {-|
 
+
 # Search the parsed XML
 
 @docs tags, contains
@@ -9,14 +10,16 @@ module Xml.Query exposing (tags, contains, tag, collect, string, int, float, boo
 @docs tag, collect, default
 
 @docs string, int, float, bool
+
 -}
 
 import Xml exposing (Value(..))
 
 
 {-| Try to get a given tag name out from an XML value, then grab the value from that
-    Grabs the first tag that matches in the object
+Grabs the first tag that matches in the object
 
+    import Dict
     import Xml exposing (Value(..))
 
     tag "name" string (Tag "name" Dict.empty (StrNode "noah"))
@@ -27,6 +30,7 @@ import Xml exposing (Value(..))
 
     tag "name" string (StrNode "noah")
     --> Err "No tag called 'name' found."
+
 -}
 tag : String -> (Value -> Result String a) -> Value -> Result String a
 tag name converter value =
@@ -51,11 +55,16 @@ tag name converter value =
 
 {-| Collect as many values that pass the given converter
 
+    import Dict
+    import Xml exposing (Value(IntNode, StrNode, Tag))
+    import Xml.Query exposing (collect, string, tag)
+
     collect (tag "name" string) [Tag "name" Dict.empty (StrNode "noah")]
     --> [ "noah" ]
 
     collect (tag "name" string) [Tag "name" Dict.empty (IntNode 5)]
     --> [ ]
+
 -}
 collect : (Value -> Result String a) -> List Value -> List a
 collect fn values =
@@ -64,11 +73,14 @@ collect fn values =
 
 {-| Try to turn a value into a string
 
+    import Xml exposing (Value(IntNode, StrNode))
+
     string (IntNode 5)
     --> Err "Not a string."
 
     string (StrNode "hello")
     --> Ok "hello"
+
 -}
 string : Value -> Result String String
 string value =
@@ -82,11 +94,14 @@ string value =
 
 {-| Try to turn a value into an int
 
+    import Xml exposing (Value(IntNode, StrNode))
+
     int (IntNode 5)
     --> Ok 5
 
     int (StrNode "hello")
     --> Err "Not an int"
+
 -}
 int : Value -> Result String Int
 int value =
@@ -100,11 +115,14 @@ int value =
 
 {-| Try to turn a value into an int
 
+    import Xml exposing (Value(FloatNode, StrNode))
+
     float (FloatNode 5.5)
     --> Ok 5.5
 
     float (StrNode "hello")
     --> Err "Not a float"
+
 -}
 float : Value -> Result String Float
 float value =
@@ -118,11 +136,14 @@ float value =
 
 {-| Try to turn a value into an int
 
+    import Xml exposing (Value(BoolNode, StrNode))
+
     bool (BoolNode True)
     --> Ok True
 
     bool (StrNode "hello")
     --> Err "Not a bool"
+
 -}
 bool : Value -> Result String Bool
 bool value =
@@ -135,6 +156,7 @@ bool value =
 
 
 {-|
+
     Set a default for a result
 
     >> default "Cat" (Ok "Fish")
