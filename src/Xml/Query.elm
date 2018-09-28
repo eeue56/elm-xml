@@ -23,6 +23,7 @@ import Xml exposing (Value(..))
 {-| Try to get a given tag name out from an XML value, then grab the value from that
 Grabs the first tag that matches in the object
 
+    import Dict
     import Xml exposing (Value(..))
 
     tag "name" string (Tag "name" Dict.empty (StrNode "noah"))
@@ -58,6 +59,9 @@ tag name converter value =
 
 {-| Collect as many values that pass the given converter
 
+    import Dict
+    import Xml exposing (Value(..))
+
     collect (tag "name" string) [Tag "name" Dict.empty (StrNode "noah")]
     --> [ "noah" ]
 
@@ -71,6 +75,8 @@ collect fn values =
 
 
 {-| Try to turn a value into a string
+
+    import Xml exposing (Value(..))
 
     string (IntNode 5)
     --> Err "Not a string."
@@ -91,6 +97,8 @@ string value =
 
 {-| Try to turn a value into an int
 
+    import Xml exposing (Value(..))
+
     int (IntNode 5)
     --> Ok 5
 
@@ -110,6 +118,8 @@ int value =
 
 {-| Try to turn a value into an int
 
+    import Xml exposing (Value(..))
+
     float (FloatNode 5.5)
     --> Ok 5.5
 
@@ -128,6 +138,8 @@ float value =
 
 
 {-| Try to turn a value into an int
+
+    import Xml exposing (Value(..))
 
     bool (BoolNode True)
     --> Ok True

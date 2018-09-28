@@ -69,6 +69,7 @@ foldl fn init value =
 
     import Dict
     import Json.Encode as Json
+    import Xml exposing (jsonToXml, Value(..))
 
     xmlToJson (StrNode "hello")
     --> Json.string "hello"
@@ -138,6 +139,10 @@ xmlDecoder =
 
 
 {-| Convert a `Json.Value` into an `Xml.Value`
+
+    import Dict
+    import Json.Encode as Json
+    import Xml exposing (jsonToXml, Value(..))
 
     jsonToXml (Json.string "hello")
     --> StrNode "hello"

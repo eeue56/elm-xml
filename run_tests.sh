@@ -1,4 +1,3 @@
 #!/bin/bash
 
-elm-verify-examples
-elm-test
+elm-verify-examples && elm-test

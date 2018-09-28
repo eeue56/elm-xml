@@ -206,7 +206,8 @@ decodeString str =
 
 
 {-| Decode a int
-import Xml exposing (Value(..))
+
+    import Xml exposing (Value(..))
 
     decodeInt "hello"
     --> Err "could not convert string 'hello' to an Int"
@@ -227,7 +228,8 @@ decodeInt str =
 
 
 {-| Decode a float
-import Xml exposing (Value(..))
+
+    import Xml exposing (Value(..))
 
     decodeFloat "hello"
     --> Err "could not convert string 'hello' to a Float"
