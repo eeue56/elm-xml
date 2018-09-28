@@ -1,17 +1,31 @@
-module Xml.Encode exposing (encode, string, int, float, bool, object, null, list)
+module Xml.Encode exposing
+    ( encode
+    , string, int, float, bool, object, null, list
+    )
 
 {-|
+
     Use this module for turning your Elm data into an `Xml` representation that can be either
     queried or decoded, or turned into a string.
 
 @docs encode
 
 @docs string, int, float, bool, object, null, list
+
 -}
 
-import String
 import Dict exposing (Dict)
+import String
 import Xml exposing (Value(..))
+
+
+boolToString : Bool -> String
+boolToString b =
+    if b then
+        "true"
+
+    else
+        "false"
 
 
 propToString : Value -> String
@@ -21,14 +35,13 @@ propToString value =
             str
 
         IntNode n ->
-            toString n
+            String.fromInt n
 
         BoolNode b ->
-            toString b
-                |> String.toLower
+            boolToString b
 
         FloatNode f ->
-            toString f
+            String.fromFloat f
 
         _ ->
             ""
@@ -37,11 +50,12 @@ propToString value =
 propsToString : Dict String Value -> String
 propsToString props =
     Dict.toList props
-        |> List.map (\( key, value ) -> key ++ "=\"" ++ (propToString value) ++ "\"")
+        |> List.map (\( key, value ) -> key ++ "=\"" ++ propToString value ++ "\"")
         |> String.join " "
         |> (\x ->
                 if String.length x > 0 then
                     " " ++ x
+
                 else
                     ""
            )
@@ -71,31 +85,32 @@ valueToString level indent value =
                 indentString =
                     if needsIndent nextValue then
                         "\n"
+
                     else
                         ""
             in
-                "<"
-                    ++ name
-                    ++ (propsToString props)
-                    ++ ">"
-                    ++ indentString
-                    ++ (valueToString (level + 1) indent nextValue)
-                    ++ indentString
-                    ++ "</"
-                    ++ name
-                    ++ ">"
+            "<"
+                ++ name
+                ++ propsToString props
+                ++ ">"
+                ++ indentString
+                ++ valueToString (level + 1) indent nextValue
+                ++ indentString
+                ++ "</"
+                ++ name
+                ++ ">"
 
         StrNode str ->
             str
 
         IntNode n ->
-            toString n
+            String.fromInt n
 
         FloatNode n ->
-            toString n
+            String.fromFloat n
 
         BoolNode b ->
-            toString b |> String.toLower
+            boolToString b
 
         Object xs ->
             List.map (valueToString (level + 1) indent) xs
@@ -105,7 +120,7 @@ valueToString level indent value =
         DocType name props ->
             "<?"
                 ++ name
-                ++ (propsToString props)
+                ++ propsToString props
                 ++ "?>"
 
 
@@ -120,6 +135,7 @@ encode indent value =
 
     string "hello" |> encode 0
     --> "hello"
+
 -}
 string : String -> Value
 string str =
@@ -130,6 +146,7 @@ string str =
 
     int 15 |> encode 0
     --> "15"
+
 -}
 int : Int -> Value
 int n =
@@ -140,6 +157,7 @@ int n =
 
     float 1.576 |> encode 0
     --> "1.576"
+
 -}
 float : Float -> Value
 float n =
@@ -153,6 +171,7 @@ float n =
 
     bool True |> encode 0
     --> "true"
+
 -}
 bool : Bool -> Value
 bool b =
@@ -168,10 +187,12 @@ object values =
 
 
 {-| Encode a list of nodes, e.g
+
     import Dict
 
     list [ object [ ("Root", Dict.empty, null) ], int 5 ] |> encode 0
     --> "<Root></Root>\n5"
+
 -}
 list : List Value -> Value
 list values =
@@ -182,6 +203,7 @@ list values =
 
     null |> encode 0
     --> ""
+
 -}
 null : Value
 null =

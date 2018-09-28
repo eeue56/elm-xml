@@ -1,17 +1,19 @@
-module Xml exposing (Value(..), map, foldl, xmlToJson, jsonToXml)
+module Xml exposing
+    ( Value(..)
+    , foldl, map, xmlToJson, jsonToXml
+    )
 
-{-|
-
-The main data structure along with some trivial helpers.
+{-| The main data structure along with some trivial helpers.
 
 @docs Value
 
 @docs foldl, map, xmlToJson, jsonToXml
+
 -}
 
 import Dict exposing (Dict)
-import Json.Encode as Json
 import Json.Decode as JD
+import Json.Encode as Json
 
 
 {-| Representation of the XML tree
@@ -27,7 +29,9 @@ type Value
 
 
 {-|
+
     Standard mapping of a value to another value
+
 -}
 map : (Value -> Value) -> Value -> Value
 map fn value =
@@ -79,10 +83,11 @@ foldl fn init value =
     --> Json.bool True
 
     xmlToJson (Object [ IntNode 5, BoolNode True ])
-    --> Json.list [Json.int 5, Json.bool True]
+    --> Json.list identity [Json.int 5, Json.bool True]
 
     xmlToJson (DocType "" Dict.empty)
     --> Json.null
+
 -}
 xmlToJson : Value -> Json.Value
 xmlToJson xml =
@@ -91,11 +96,11 @@ xmlToJson xml =
             let
                 jsonAttrs =
                     Dict.toList attributes
-                        |> List.map (\( name, value ) -> ( name, xmlToJson value ))
+                        |> List.map (\( nam, value ) -> ( nam, xmlToJson value ))
                         |> (\list -> list ++ [ ( "value", xmlToJson nextValue ) ])
                         |> Json.object
             in
-                Json.object [ ( name, jsonAttrs ) ]
+            Json.object [ ( name, jsonAttrs ) ]
 
         StrNode str ->
             Json.string str
@@ -110,8 +115,7 @@ xmlToJson xml =
             Json.bool bool
 
         Object values ->
-            List.map xmlToJson values
-                |> Json.list
+            Json.list xmlToJson values
 
         DocType _ _ ->
             Json.null
@@ -150,7 +154,7 @@ xmlDecoder =
     jsonToXml (Json.object [("name", Json.string "hello")])
     --> Object [ Tag "name" Dict.empty (StrNode "hello") ]
 
-    jsonToXml (Json.list [Json.string "name", Json.string "hello"])
+    jsonToXml (Json.list identity [Json.string "name", Json.string "hello"])
     --> Object [ StrNode "name", StrNode "hello" ]
 
 -}

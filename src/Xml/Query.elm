@@ -1,6 +1,11 @@
-module Xml.Query exposing (tags, contains, tag, collect, string, int, float, bool, default)
+module Xml.Query exposing
+    ( tags, contains
+    , tag, collect, default
+    , string, int, float, bool
+    )
 
 {-|
+
 
 # Search the parsed XML
 
@@ -9,13 +14,14 @@ module Xml.Query exposing (tags, contains, tag, collect, string, int, float, boo
 @docs tag, collect, default
 
 @docs string, int, float, bool
+
 -}
 
 import Xml exposing (Value(..))
 
 
 {-| Try to get a given tag name out from an XML value, then grab the value from that
-    Grabs the first tag that matches in the object
+Grabs the first tag that matches in the object
 
     import Xml exposing (Value(..))
 
@@ -27,6 +33,7 @@ import Xml exposing (Value(..))
 
     tag "name" string (StrNode "noah")
     --> Err "No tag called 'name' found."
+
 -}
 tag : String -> (Value -> Result String a) -> Value -> Result String a
 tag name converter value =
@@ -56,6 +63,7 @@ tag name converter value =
 
     collect (tag "name" string) [Tag "name" Dict.empty (IntNode 5)]
     --> [ ]
+
 -}
 collect : (Value -> Result String a) -> List Value -> List a
 collect fn values =
@@ -69,6 +77,7 @@ collect fn values =
 
     string (StrNode "hello")
     --> Ok "hello"
+
 -}
 string : Value -> Result String String
 string value =
@@ -87,6 +96,7 @@ string value =
 
     int (StrNode "hello")
     --> Err "Not an int"
+
 -}
 int : Value -> Result String Int
 int value =
@@ -105,6 +115,7 @@ int value =
 
     float (StrNode "hello")
     --> Err "Not a float"
+
 -}
 float : Value -> Result String Float
 float value =
@@ -123,6 +134,7 @@ float value =
 
     bool (StrNode "hello")
     --> Err "Not a bool"
+
 -}
 bool : Value -> Result String Bool
 bool value =
@@ -135,13 +147,15 @@ bool value =
 
 
 {-|
+
     Set a default for a result
+        >> default "Cat" (Ok "Fish")
 
-    >> default "Cat" (Ok "Fish")
     Ok "Fish"
+        >> default "Dog" (Err "flip")
 
-    >> default "Dog" (Err "flip")
     Ok "Dog"
+
 -}
 default : b -> Result a b -> Result a b
 default b res =
@@ -184,10 +198,11 @@ tags tagName node =
         Tag name _ value ->
             (if name == tagName then
                 [ node ]
+
              else
                 []
             )
-                ++ (tags tagName value)
+                ++ tags tagName value
 
         Object nodes ->
             List.map (tags tagName) nodes
@@ -200,6 +215,7 @@ contains : Value -> Value -> Bool
 contains contents node =
     if node == contents then
         True
+
     else
         case node of
             StrNode _ ->

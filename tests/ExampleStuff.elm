@@ -1,11 +1,12 @@
-module ExampleStuff exposing (..)
+module ExampleStuff exposing (Object, Person, Unit(..), correctPeople, decodedXml, fromXML, people, person, rebucket, stuff)
 
+import Iso8601
+import Time exposing (Month(..), Posix)
+import Time.Extra
 import Xml exposing (Value(..))
-import Xml.Encode exposing (null)
 import Xml.Decode exposing (..)
+import Xml.Encode exposing (null)
 import Xml.Query exposing (..)
-import Date exposing (Date, Month(Jan))
-import Date.Extra as Date
 
 
 rebucket : a -> a
@@ -18,10 +19,26 @@ type Unit
 
 
 type alias Object =
-    { time : Date
+    { time : Posix
     , size : Unit
     , path : List String
     }
+
+
+defaultTime : Posix
+defaultTime =
+    Time.Extra.partsToPosix Time.utc <|
+        Time.Extra.Parts 1970 Jan 1 0 0 0 0
+
+
+iso8601ToTime : String -> Result String Posix
+iso8601ToTime string =
+    case Iso8601.toTime string of
+        Ok res ->
+            Ok res
+
+        Err _ ->
+            Err "Iso8601 parse error"
 
 
 fromXML : String -> Result String (List Object)
@@ -31,8 +48,8 @@ fromXML body =
         getObject value =
             let
                 time =
-                    tag "LastModified" (string >> (Result.andThen Date.fromString))
-                        >> default (Date.fromParts 1970 Jan 1 0 0 0 0)
+                    tag "LastModified" (string >> Result.andThen iso8601ToTime)
+                        >> default defaultTime
 
                 size =
                     tag "Size" (int >> Result.map (Bytes >> rebucket))
@@ -42,24 +59,24 @@ fromXML body =
                     tag "Key" (string >> Result.map (String.split "/"))
                         >> default []
             in
-                Result.map3
-                    (\time size path ->
-                        { time = time
-                        , size = size
-                        , path = path
-                        }
-                    )
-                    (time value)
-                    (size value)
-                    (path value)
-    in
-        decode body
-            |> Result.map
-                (tags "ListBucketResult"
-                    >> List.map (tags "Contents")
-                    >> List.concat
-                    >> collect getObject
+            Result.map3
+                (\tim siz pat ->
+                    { time = tim
+                    , size = siz
+                    , path = pat
+                    }
                 )
+                (time value)
+                (size value)
+                (path value)
+    in
+    decode body
+        |> Result.map
+            (tags "ListBucketResult"
+                >> List.map (tags "Contents")
+                >> List.concat
+                >> collect getObject
+            )
 
 
 stuff =
