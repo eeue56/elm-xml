@@ -1,0 +1,15 @@
+These are notes on creating a pull request for eeue56/elm-xml.
+
+I have since renamed the package to billstclair/elm-xml-eeu56.
+
+I moved my pull request from a pass-through on myrho's fork to my own direct fork. This fixes four things:
+
+<foo/> now parses correctly. Before it needed attributes or some space before the closing />.
+
+Updated to the latest elm-test, which no longer requires Main.elm or the rtfeldman/node-test-runner package.
+
+Updated to elm-verify-examples and its new doc test syntax.
+
+Added sysconfcpus to .travis.xml for epic Elm compile time improvement, minutes become seconds.
+
+Trimmed the giant 1000-element S3 directory string to 100 elements, to prevent timeouts on Travis.
