@@ -6,7 +6,7 @@ os:
 
 env:
   matrix:
-    - ELM_VERSION=0.19 ELM_TEST_VERSION=elm0.19.0 TARGET_NODE_VERSION=node
+    - ELM_VERSION=elm0.19.0 ELM_TEST_VERSION=elm0.19.0 TARGET_NODE_VERSION=node
 
 install:
   - nvm install $TARGET_NODE_VERSION
