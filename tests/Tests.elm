@@ -1,14 +1,14 @@
 module Tests exposing (..)
 
 import Dict
-import Test exposing (..)
+import ExampleStuff
 import Expect
 import String
+import Test exposing (..)
 import Xml exposing (..)
-import Xml.Encode exposing (..)
 import Xml.Decode exposing (..)
-import Xml.Query exposing (tags, contains)
-import ExampleStuff
+import Xml.Encode exposing (..)
+import Xml.Query exposing (contains, tags)
 
 
 example : Value
@@ -22,6 +22,16 @@ example =
 exampleAsString : String
 exampleAsString =
     """
+<name>noah</name>
+<age>5</age>
+"""
+        |> String.trim
+
+
+exampleAsStringWithDocType : String
+exampleAsStringWithDocType =
+    """
+<?xml encoding="UTF-8" version="1"?>
 <name>noah</name>
 <age>5</age>
 """
@@ -144,6 +154,9 @@ all =
         , test "a basic tag is decoded properly" <|
             \_ ->
                 Expect.equal (decode exampleAsString) (Ok example)
+        , test "a basic tag with doc type is encoded properly" <|
+            \_ ->
+                Expect.equal (Result.map (encode 0) (decode exampleAsStringWithDocType)) (Ok exampleAsStringWithDocType)
         , test "a tag with props is encoded properly" <|
             \_ ->
                 Expect.equal exampleWithPropsAsString (encode 4 exampleWithProps)
