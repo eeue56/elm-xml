@@ -3,7 +3,7 @@
     "name": "billstclair/elm-xml-eeue56",
     "summary": "XML parser, encoder/decoder and queries in Elm",
     "license": "BSD-3-Clause",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "exposed-modules": [
         "Xml.Encode",
         "Xml.Decode",
