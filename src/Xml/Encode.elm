@@ -88,14 +88,23 @@ valueToString level indent value =
 
                     else
                         ""
+
+                indentClosing =
+                    if needsIndent nextValue then
+                        String.repeat (level * indent) " "
+
+                    else
+                        ""
             in
-            "<"
+            String.repeat (level * indent) " "
+                ++ "<"
                 ++ name
                 ++ propsToString props
                 ++ ">"
                 ++ indentString
-                ++ valueToString (level + 1) indent nextValue
+                ++ valueToString level indent nextValue
                 ++ indentString
+                ++ indentClosing
                 ++ "</"
                 ++ name
                 ++ ">"
@@ -114,7 +123,6 @@ valueToString level indent value =
 
         Object xs ->
             List.map (valueToString (level + 1) indent) xs
-                |> List.map ((++) (String.repeat (level * indent) " "))
                 |> String.join "\n"
 
         DocType name props ->
