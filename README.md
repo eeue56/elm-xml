@@ -1,6 +1,8 @@
 # elm-xml [![Build Status](https://travis-ci.org/billstclair/elm-xml-eeue56.svg?branch=master)](https://travis-ci.org/billstclair/elm-xml-eeue56)
 xml parser for elm
 
+[Note that as of version 2.0.0, `xmlToJson` is renamed to `xmlToJson2`, since it now represents `Tag` objects differently]
+
 First bring XML into Elm as a `Value`. Once imported as a Value, you can then either query the values with `Xml.Query`.
 
 Or you can turn it back to a string using `Xml.Encode.encode`. Or pull it apart using `Xml.Encode.Value`.

@@ -1,14 +1,13 @@
 module Xml exposing
     ( Value(..)
-    , foldl, map, xmlToJson, jsonToXml
-    , version2
+    , foldl, map, xmlToJson2, jsonToXml
     )
 
 {-| The main data structure along with some trivial helpers.
 
 @docs Value
 
-@docs foldl, map, xmlToJson, jsonToXml
+@docs foldl, map, xmlToJson2, jsonToXml
 
 -}
 
@@ -68,51 +67,53 @@ foldl fn init value =
 
 {-| Convert an `Xml.Value` to a `Json.Value`
 
-The conversion of `Tag`s changed in version 1.0.3, so that they can be properly converted back. The attribute names become JSON keys with "@" prepended, and the value becomes a JSON key named "#value": <foo x="x">1</foo> becomes {foo: {#value: 1, @x: "x"}}
+The conversion of `Tag`s changed in version 2.0.0, so that they can be properly converted back. The attribute names become JSON keys with "@" prepended, and the value becomes a JSON key named "#value": <foo x="x">1</foo> becomes {foo: {#value: 1, @x: "x"}}
+
+Renamed from xmlToJson to force a bump to version 2.0.
 
     import Dict
     import Json.Encode as Json
     import Xml exposing (jsonToXml, Value(..))
 
-    xmlToJson (StrNode "hello")
+    xmlToJson2 (StrNode "hello")
     --> Json.string "hello"
 
-    xmlToJson (IntNode 5)
+    xmlToJson2 (IntNode 5)
     --> Json.int 5
 
-    xmlToJson (FloatNode 5)
+    xmlToJson2 (FloatNode 5)
     --> Json.float 5
 
-    xmlToJson (BoolNode True)
+    xmlToJson2 (BoolNode True)
     --> Json.bool True
 
-    xmlToJson (Object [ IntNode 5, BoolNode True ])
+    xmlToJson2 (Object [ IntNode 5, BoolNode True ])
     --> Json.list identity [Json.int 5, Json.bool True]
 
-    xmlToJson (Tag "foo" (Dict.fromList [("x",StrNode "x")]) (IntNode 1))
+    xmlToJson2 (Tag "foo" (Dict.fromList [("x",StrNode "x")]) (IntNode 1))
     --> Json.object [("foo", Json.object [("#value", Json.int 1), ("@x", Json.string "x")])]
 
-    xmlToJson (DocType "" Dict.empty)
+    xmlToJson2 (DocType "" Dict.empty)
     --> Json.null
 
 -}
-xmlToJson : Value -> Json.Value
-xmlToJson xml =
+xmlToJson2 : Value -> Json.Value
+xmlToJson2 xml =
     case xml of
         Tag name attributes nextValue ->
             let
                 jsonAttrs =
                     Dict.toList attributes
-                        |> List.map (\( nam, value ) -> ( "@" ++ nam, xmlToJson value ))
+                        |> List.map (\( nam, value ) -> ( "@" ++ nam, xmlToJson2 value ))
             in
             Json.object
                 [ ( name
                   , if List.isEmpty jsonAttrs then
-                        xmlToJson nextValue
+                        xmlToJson2 nextValue
 
                     else
                         jsonAttrs
-                            |> List.append [ ( "#value", xmlToJson nextValue ) ]
+                            |> List.append [ ( "#value", xmlToJson2 nextValue ) ]
                             |> Json.object
                   )
                 ]
@@ -130,7 +131,7 @@ xmlToJson xml =
             Json.bool bool
 
         Object values ->
-            Json.list xmlToJson values
+            Json.list xmlToJson2 values
 
         DocType _ _ ->
             Json.null
@@ -240,10 +241,3 @@ jsonToXml : Json.Value -> Value
 jsonToXml json =
     JD.decodeValue xmlDecoder json
         |> Result.withDefault (Object [])
-
-
-{-| A new exported value to ensure the version bumps to 2.0.
--}
-version2 : String
-version2 =
-    "2"
