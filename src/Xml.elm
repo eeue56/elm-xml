@@ -67,6 +67,8 @@ foldl fn init value =
 
 {-| Convert an `Xml.Value` to a `Json.Value`
 
+The conversion of `Tag`s changed in version 1.0.3, so that they can be properly converted back. The attribute names become JSON keys with "@" prepended, and the value becomes a JSON key named "#value": <foo x="x">1</foo> becomes {foo: {#value: 1, @x: "x"}}
+
     import Dict
     import Json.Encode as Json
     import Xml exposing (jsonToXml, Value(..))
@@ -206,8 +208,6 @@ xmlDecoder =
 
 
 {-| Convert a `Json.Value` into an `Xml.Value`
-
-The conversion of `Tag`s changed in version 1.0.3, so that they can be properly converted back. The attribute names become JSON keys with "@" prepended, and the value becomes a JSON key named "#value": <foo x="x">1</foo> becomes {foo: {#value: 1, @x: "x"}}
 
     import Dict
     import Json.Encode as Json
