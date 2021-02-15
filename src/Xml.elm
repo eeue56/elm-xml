@@ -97,11 +97,19 @@ xmlToJson xml =
             let
                 jsonAttrs =
                     Dict.toList attributes
-                        |> List.map (\( nam, value ) -> ( nam, xmlToJson value ))
-                        |> (\list -> list ++ [ ( "value", xmlToJson nextValue ) ])
-                        |> Json.object
+                        |> List.map (\( nam, value ) -> ( "@" ++ nam, xmlToJson value ))
             in
-            Json.object [ ( name, jsonAttrs ) ]
+            Json.object
+                [ ( name
+                  , if List.isEmpty jsonAttrs then
+                        xmlToJson nextValue
+
+                    else
+                        jsonAttrs
+                            |> List.append [ ( "#value", xmlToJson nextValue ) ]
+                            |> Json.object
+                  )
+                ]
 
         StrNode str ->
             Json.string str
@@ -133,7 +141,37 @@ xmlDecoder =
         , JD.map BoolNode JD.bool
         , JD.map Object (JD.list (JD.lazy (\_ -> xmlDecoder)))
         , JD.map
-            (Dict.toList >> List.map (\( name, val ) -> Tag name Dict.empty val) >> Object)
+            (Dict.toList
+                >> List.map
+                    (\( name, val ) ->
+                        if name == "#value" then
+                            val
+
+                        else
+                            case val of
+                                Object list ->
+                                    list
+                                        |> List.foldl
+                                            (\v ( a_, p_ ) ->
+                                                case v of
+                                                    Tag str _ b ->
+                                                        if String.startsWith "@" str then
+                                                            ( ( String.dropLeft 1 str, b ) :: a_, p_ )
+
+                                                        else
+                                                            ( a_, v :: p_ )
+
+                                                    _ ->
+                                                        ( a_, v :: p_ )
+                                            )
+                                            ( [], [] )
+                                        |> (\( attr, params ) -> Tag name (Dict.fromList attr) (Object params))
+
+                                _ ->
+                                    Tag name Dict.empty val
+                    )
+                >> Object
+            )
             (JD.dict (JD.lazy (\_ -> xmlDecoder)))
         ]
 
