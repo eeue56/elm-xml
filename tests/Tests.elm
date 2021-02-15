@@ -123,7 +123,43 @@ nestedExample =
           , Dict.empty
           , object
                 [ ( "name", Dict.empty, string "noah" )
-                , ( "age", Dict.empty, int 5 )
+                , ( "age", Dict.empty, int 50 )
+                , ( "children"
+                  , Dict.empty
+                  , object
+                        [ ( "person"
+                          , Dict.fromList [ ( "gender", string "male" ) ]
+                          , object
+                                [ ( "name", Dict.empty, string "david" )
+                                , ( "age", Dict.empty, int 13 )
+                                ]
+                          )
+                        , ( "person"
+                          , Dict.fromList [ ( "gender", string "female" ) ]
+                          , object
+                                [ ( "name", Dict.empty, string "daisy" )
+                                , ( "age", Dict.empty, int 25 )
+                                , ( "children"
+                                  , Dict.empty
+                                  , object
+                                        [ ( "person"
+                                          , Dict.empty
+                                          , object
+                                                [ ( "name", Dict.empty, string "daniel" )
+                                                ]
+                                          )
+                                        , ( "person"
+                                          , Dict.empty
+                                          , object
+                                                [ ( "name", Dict.empty, string "duncan" )
+                                                ]
+                                          )
+                                        ]
+                                  )
+                                ]
+                          )
+                        ]
+                  )
                 ]
           )
         ]
@@ -134,7 +170,25 @@ nestedExampleAsString =
     """
 <person>
     <name>noah</name>
-    <age>5</age>
+    <age>50</age>
+    <children>
+        <person gender="male">
+            <name>david</name>
+            <age>13</age>
+        </person>
+        <person gender="female">
+            <name>daisy</name>
+            <age>25</age>
+            <children>
+                <person>
+                    <name>daniel</name>
+                </person>
+                <person>
+                    <name>duncan</name>
+                </person>
+            </children>
+        </person>
+    </children>
 </person>
 """
         |> String.trim

@@ -125,17 +125,39 @@ parseSlice first firstClose trimmed =
                     ++ tagName
                     |> Err
 
-        firstCloseTag :: _ ->
+        firstCloseTag :: otherCloseTags ->
             let
+                openTag =
+                    "<" ++ tagName
+
+                intermediateNodes =
+                    String.indexes openTag trimmed
+                        |> List.drop 1
+
+                correctCloseTag =
+                    let
+                        hasNestedChildrenWithSameName =
+                            List.all (\y -> firstCloseTag <= y) intermediateNodes
+                                |> not
+                    in
+                    if hasNestedChildrenWithSameName then
+                        (firstCloseTag :: otherCloseTags)
+                            |> List.drop (List.length intermediateNodes)
+                            |> List.head
+                            |> Maybe.withDefault firstCloseTag
+
+                    else
+                        firstCloseTag
+
                 contents =
-                    String.slice (firstClose + 1) firstCloseTag trimmed
+                    String.slice (firstClose + 1) correctCloseTag trimmed
             in
             case decodeChildren contents of
                 Err s ->
                     Err s
 
                 Ok v ->
-                    Ok ( Tag tagName props v, firstCloseTag + String.length closeTag )
+                    Ok ( Tag tagName props v, correctCloseTag + String.length closeTag )
 
 
 actualDecode : String -> Result String (List Value)
@@ -161,8 +183,7 @@ actualDecode text =
                                     Err ("Parsed to " ++ Encode.encode 0 foundValue ++ ", but then hit " ++ err)
 
                             Ok thing ->
-                                [ foundValue ]
-                                    ++ thing
+                                (foundValue :: thing)
                                     |> Ok
                     )
 
