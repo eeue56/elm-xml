@@ -139,7 +139,16 @@ xmlDecoder =
         , JD.map IntNode JD.int
         , JD.map FloatNode JD.float
         , JD.map BoolNode JD.bool
-        , JD.map Object (JD.list (JD.lazy (\_ -> xmlDecoder)))
+        , JD.list (JD.lazy (\_ -> xmlDecoder))
+            |> JD.andThen
+                (\list ->
+                    case list of
+                        [ x ] ->
+                            JD.succeed x
+
+                        _ ->
+                            Object list |> JD.succeed
+                )
         , JD.map
             (Dict.toList
                 >> List.map
@@ -165,7 +174,17 @@ xmlDecoder =
                                                         ( a_, v :: p_ )
                                             )
                                             ( [], [] )
-                                        |> (\( attr, params ) -> Tag name (Dict.fromList attr) (Object params))
+                                        |> (\( attr, params ) ->
+                                                Tag name
+                                                    (Dict.fromList attr)
+                                                    (case params of
+                                                        [ x ] ->
+                                                            x
+
+                                                        _ ->
+                                                            Object params
+                                                    )
+                                           )
 
                                 _ ->
                                     Tag name Dict.empty val
