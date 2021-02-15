@@ -1,6 +1,7 @@
 module Xml exposing
     ( Value(..)
     , foldl, map, xmlToJson, jsonToXml
+    , version2
     )
 
 {-| The main data structure along with some trivial helpers.
@@ -239,3 +240,10 @@ jsonToXml : Json.Value -> Value
 jsonToXml json =
     JD.decodeValue xmlDecoder json
         |> Result.withDefault (Object [])
+
+
+{-| A new exported value to ensure the version bumps to 2.0.
+-}
+version2 : String
+version2 =
+    "2"
