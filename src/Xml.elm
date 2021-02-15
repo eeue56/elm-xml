@@ -86,6 +86,9 @@ foldl fn init value =
     xmlToJson (Object [ IntNode 5, BoolNode True ])
     --> Json.list identity [Json.int 5, Json.bool True]
 
+    xmlToJson (Tag "foo" (Dict.fromList [("x",StrNode "x")]) (IntNode 1))
+    --> Json.object [("foo", Json.object [("#value", Json.int 1), ("@x", Json.string "x")])]
+
     xmlToJson (DocType "" Dict.empty)
     --> Json.null
 
@@ -189,13 +192,22 @@ xmlDecoder =
                                 _ ->
                                     Tag name Dict.empty val
                     )
-                >> Object
+                >> (\list ->
+                        case list of
+                            [ x ] ->
+                                x
+
+                            _ ->
+                                Object list
+                   )
             )
             (JD.dict (JD.lazy (\_ -> xmlDecoder)))
         ]
 
 
 {-| Convert a `Json.Value` into an `Xml.Value`
+
+The conversion of `Tag`s changed in version 1.0.3, so that they can be properly converted back. The attribute names become JSON keys with "@" prepended, and the value becomes a JSON key named "#value": <foo x="x">1</foo> becomes {foo: {#value: 1, @x: "x"}}
 
     import Dict
     import Json.Encode as Json
@@ -214,10 +226,13 @@ xmlDecoder =
     --> BoolNode True
 
     jsonToXml (Json.object [("name", Json.string "hello")])
-    --> Object [ Tag "name" Dict.empty (StrNode "hello") ]
+    --> Tag "name" Dict.empty (StrNode "hello")
 
     jsonToXml (Json.list identity [Json.string "name", Json.string "hello"])
     --> Object [ StrNode "name", StrNode "hello" ]
+
+    jsonToXml (Json.object [("foo", Json.object [("#value", Json.int 1), ("@x", Json.string "x")])])
+    --> Tag "foo" (Dict.fromList [("x",StrNode "x")]) (IntNode 1)
 
 -}
 jsonToXml : Json.Value -> Value
